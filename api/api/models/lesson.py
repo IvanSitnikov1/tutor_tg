@@ -6,15 +6,15 @@ from sqlalchemy.orm import Mapped, mapped_column, relationship
 from api.configs.database import Base
 
 if TYPE_CHECKING:
-    from api.models.user import Student, Homework
+    from api.models import Student, Homework, File
 
 
 class Lesson(Base):
     __tablename__ = "lessons"
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
     name: Mapped[str] = mapped_column(String, nullable=False)
-    file_path: Mapped[str] = mapped_column(String, nullable=False)
     student_id: Mapped[int] = mapped_column(ForeignKey("students.id", ondelete='CASCADE'), nullable=False)
 
-    student: Mapped["Student"] = relationship("Student", back_populates="lessons")
+    files: Mapped[list["File"]] = relationship("File", back_populates="lesson")
     homeworks: Mapped[list["Homework"]] = relationship('Homework', back_populates='lesson')
+    student: Mapped["Student"] = relationship("Student", back_populates="lessons")

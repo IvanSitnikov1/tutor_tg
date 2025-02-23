@@ -5,7 +5,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from api.configs.database import connection
 from api.models.user import Teacher
-from api.schemas.users.user import UserTeacherAdd
+from api.schemas.user import UserTeacherAdd
 from api.configs.loggers import user_logger
 
 

@@ -12,3 +12,8 @@ class UserTeacherAdd(UserAdd):
 
 class UserStudentAdd(UserAdd):
     teacher_id: int
+
+
+class SAddPersonalFile(BaseModel):
+    author_id: int
+    file_path: str

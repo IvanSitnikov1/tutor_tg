@@ -1,6 +1,7 @@
 from fastapi import FastAPI
 from contextlib import asynccontextmanager
 from pydantic_settings import BaseSettings
+from fastapi.staticfiles import StaticFiles
 
 from api.configs.loggers import system_logger
 
@@ -13,6 +14,8 @@ async def lifespan(app: FastAPI):
 
 
 app = FastAPI(lifespan=lifespan)
+
+app.mount("/static", StaticFiles(directory="../static"), name="static")
 
 
 class Settings(BaseSettings):

@@ -6,7 +6,7 @@ from sqlalchemy import Integer, String, ForeignKey, BigInteger
 from api.configs.database import Base
 
 if TYPE_CHECKING:
-    from api.models.lesson import Lesson
+    from api.models import Lesson, PersonalFile
 
 
 class User(Base):
@@ -31,6 +31,7 @@ class Teacher(User):
         back_populates="teacher",
         foreign_keys="Student.teacher_id",
     )
+    personal_files: Mapped[list["PersonalFile"]] = relationship("PersonalFile", back_populates="author")
 
     __mapper_args__ = {
         "polymorphic_identity": "teacher",

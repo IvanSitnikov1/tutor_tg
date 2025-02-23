@@ -23,24 +23,37 @@ def students_kb(students):
 
 def student_detail_kb(lessons):
     kb_list = []
+    student_id = lessons[0]['student_id']
     for lesson in lessons:
-        kb_list.append([InlineKeyboardButton(text=lesson['name'], callback_data=f'show_lesson:{lesson['id']}')])
-    kb_list.append([InlineKeyboardButton(text='Добавить урок', callback_data='gfdsg')])
+        lesson_button = InlineKeyboardButton(text=lesson['name'], callback_data=f'show_lesson:{lesson["id"]}:{student_id}')
+        delete_button = InlineKeyboardButton(text='🗑 Удалить', callback_data=f'delete_lesson:{lesson["id"]}')
+        kb_list.append([lesson_button, delete_button])  # Располагаем кнопки в один ряд
+
+    kb_list.append([InlineKeyboardButton(text='➕ Добавить урок', callback_data=f'add_lesson:{student_id}')])
+
     keyboard = InlineKeyboardMarkup(inline_keyboard=kb_list)
     return keyboard
 
 
-def add_lesson_kb():
+def add_lesson_file_kb(lesson_id):
     kb_list = [
-        [InlineKeyboardButton(text='Add', callback_data='add')]
+        [InlineKeyboardButton(text='Add', callback_data=f'add_lesson_file:{lesson_id}')]
     ]
     keyboard = InlineKeyboardMarkup(inline_keyboard=kb_list)
     return keyboard
 
 
-def add_homework_kb():
+def add_lesson_homework_kb(lesson_id):
     kb_list = [
-        [InlineKeyboardButton(text='Add', callback_data='add')]
+        [InlineKeyboardButton(text='Add', callback_data=f'add_lesson_homework:{lesson_id}')]
+    ]
+    keyboard = InlineKeyboardMarkup(inline_keyboard=kb_list)
+    return keyboard
+
+
+def personal_files_kb(user_id):
+    kb_list = [
+        [InlineKeyboardButton(text='Add', callback_data=f'add_personal_file:{user_id}')]
     ]
     keyboard = InlineKeyboardMarkup(inline_keyboard=kb_list)
     return keyboard

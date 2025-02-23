@@ -1,5 +1,5 @@
 from api.routers.user_router import user_router
-from api.schemas.users.user import UserTeacherAdd
+from api.schemas.user import UserTeacherAdd
 from api.utils.users.add_user_teacher_util import add_user_teacher_util
 
 

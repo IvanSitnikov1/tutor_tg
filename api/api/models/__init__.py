@@ -1,7 +1,14 @@
 __all__ = [
-    'Base'
+    'Base',
+    'User',
+    'Teacher',
+    'Student',
+    'Lesson',
+    'File',
+    'Homework',
+    'PersonalFile'
 ]
 
-from .user import Base
-from .lesson import Base
-from .homework import Base
+from .user import Base, User, Teacher, Student
+from .lesson import Base, Lesson
+from .file import Base, File, Homework, PersonalFile
