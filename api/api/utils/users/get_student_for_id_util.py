@@ -5,7 +5,7 @@ from sqlalchemy.orm import joinedload
 from api.configs.database import connection
 from api.models import Lesson, Student
 from api.configs.loggers import user_logger
-from api.schemas.student import SStudent
+from api.schemas.user import SStudent
 
 
 @connection

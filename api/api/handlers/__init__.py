@@ -13,6 +13,6 @@ from .users.add_personal_file import user_router
 
 from .lessons.get_lesson_for_id import lesson_router
 from .lessons.add_lesson import lesson_router
-from .lessons.add_file_in_lesson import lesson_router
+from .lessons.add_file import lesson_router
 from .lessons.add_homework import lesson_router
 from .lessons.delete_lesson import lesson_router

@@ -4,7 +4,7 @@ from bot.api_helpers.request_decorator import request_decorator
 
 @request_decorator
 async def create_user_request(user_type: str, username: str, tg_id: int, teacher_id: int = None):
-    url = f'{API_URL}/users/add_user_{user_type}'
+    url = f'{API_URL}/users/{user_type}'
     data = {
         'username': username,
         'tg_id': tg_id,

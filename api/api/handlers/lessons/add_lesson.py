@@ -5,7 +5,7 @@ from api.schemas.lesson import SLessonAdd
 
 
 @lesson_router.post(
-    '/add_lesson',
+    '',
     summary='Получение данных ученика по id',
     description='Эндпоинт возвращает данные ученика',
 )

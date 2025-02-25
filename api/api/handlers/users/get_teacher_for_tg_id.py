@@ -3,7 +3,7 @@ from api.utils.users.get_teacher_for_tg_id_util import get_teacher_for_tg_id_uti
 
 
 @user_router.get(
-    '/get_teacher_for_tg_id',
+    '/teacher/{teacher_tg_id}',
     summary='Получение списка учеников запрашиваемого учителя',
     description='Эндпоинт возвращает список учеников запрашиваемого учителя',
 )

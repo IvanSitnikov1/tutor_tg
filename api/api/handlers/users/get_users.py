@@ -3,7 +3,7 @@ from api.utils.users.get_users_util import get_users_util
 
 
 @user_router.get(
-    '/get_users',
+    '',
     summary='Получение списка пользователей',
     description='Эндпоинт возвращает список пользователей',
 )

@@ -5,13 +5,13 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from api.configs.database import connection
 from api.models.user import Student
-from api.schemas.user import UserStudentAdd
+from api.schemas.user import SStudentAdd
 from api.configs.loggers import user_logger
 
 
 @connection
 async def add_user_student_util(
-        user: UserStudentAdd,
+        user: SStudentAdd,
         session: AsyncSession,
 ):
     user_logger.info(f'Получен запрос на создание студента с username - {user.username}')

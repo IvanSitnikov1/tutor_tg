@@ -1,10 +1,13 @@
+from typing import TYPE_CHECKING
+
 from sqlalchemy import Integer, String, ForeignKey
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy.ext.declarative import declared_attr
 
 from api.configs.database import Base
 
-from api.models import Lesson, Teacher
+if TYPE_CHECKING:
+    from api.models import Lesson, Teacher
 
 
 class BaseFile(Base):

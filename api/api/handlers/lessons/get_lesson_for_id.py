@@ -3,7 +3,7 @@ from api.utils.lessons.get_lesson_for_id_util import get_lesson_for_id_util
 
 
 @lesson_router.get(
-    '/get_lesson_for_id',
+    '/{lesson_id}',
     summary='Получение данных ученика по id',
     description='Эндпоинт возвращает данные ученика',
 )

@@ -3,7 +3,7 @@ from api.utils.users.delete_user_util import delete_user_util
 
 
 @user_router.delete(
-    '/delete_user',
+    '',
     status_code=204,
     summary='Удаление пользователя',
     description='Эндпоинт удаляет пользователя по переданному tg_id.'
