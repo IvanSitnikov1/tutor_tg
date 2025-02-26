@@ -3,7 +3,7 @@ from api.utils.lessons.delete_lesson_util import delete_lesson_util
 
 
 @lesson_router.delete(
-    '/{lesson_id}',
+    '/lesson/{lesson_id}',
     summary='Получение данных ученика по id',
     description='Эндпоинт возвращает данные ученика',
 )

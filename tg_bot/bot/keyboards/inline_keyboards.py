@@ -35,10 +35,12 @@ def student_detail_kb(lessons):
     return keyboard
 
 
-def add_lesson_file_kb(lesson_id):
-    kb_list = [
-        [InlineKeyboardButton(text='Add', callback_data=f'add_lesson_file:{lesson_id}')]
-    ]
+def lesson_files_kb(lesson_id):
+    kb_list = [[
+        InlineKeyboardButton(text='Add', callback_data=f'add_lesson_file:{lesson_id}'),
+        InlineKeyboardButton(text='Удалить все', callback_data=f'delete_all_lesson_files:{lesson_id}'),
+        InlineKeyboardButton(text='Удалить выборочно', callback_data=f'delete_lesson_files:{lesson_id}'),
+    ]]
     keyboard = InlineKeyboardMarkup(inline_keyboard=kb_list)
     return keyboard
 
@@ -55,5 +57,26 @@ def personal_files_kb(user_id):
     kb_list = [
         [InlineKeyboardButton(text='Add', callback_data=f'add_personal_file:{user_id}')]
     ]
+    keyboard = InlineKeyboardMarkup(inline_keyboard=kb_list)
+    return keyboard
+
+
+def toggle_lesson_is_done_kb(lesson):
+    kb_list = [
+        [InlineKeyboardButton(text=f'Урок {lesson['name']} {'✅' if lesson['is_done'] else ''}', callback_data=f'toggle_lesson_is_done:{lesson['id']}')]
+    ]
+    keyboard = InlineKeyboardMarkup(inline_keyboard=kb_list)
+    return keyboard
+
+
+def delete_files_kb(lesson, selected_files):
+    kb_list = []
+    for file in lesson['files']:
+        is_selected = selected_files.get(str(file['id']), False)
+        checkbox = '✅' if is_selected else ''
+        file_button = InlineKeyboardButton(text=f'{checkbox} {file['file_path']}', callback_data=f"toggle_file:{file['id']}:{lesson['id']}")
+        kb_list.append([file_button])
+    kb_list.append([InlineKeyboardButton(text="Удалить выбранное", callback_data=f'delete_selected_files:{lesson['id']}')])
+
     keyboard = InlineKeyboardMarkup(inline_keyboard=kb_list)
     return keyboard

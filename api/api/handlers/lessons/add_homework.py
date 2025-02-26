@@ -5,7 +5,7 @@ from api.schemas.lesson import SFileAdd
 
 
 @lesson_router.post(
-    '/homework',
+    '/homeworks',
     summary='Получение данных ученика по id',
     description='Эндпоинт возвращает данные ученика',
 )

@@ -8,6 +8,7 @@ class SLessonAdd(BaseModel):
 
 class SLesson(SLessonAdd):
     id: int
+    is_done: bool
     files: list['SFile']
     homeworks: list['SFile']
 
@@ -25,3 +26,7 @@ class SFile(SFileAdd):
 
     class Config:
         from_attributes = True
+
+
+class SDeleteFiles(BaseModel):
+    files_ids: list[int]

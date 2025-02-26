@@ -4,7 +4,7 @@ from api.utils.users.add_user_student_util import add_user_student_util
 
 
 @user_router.post(
-    '/student',
+    '/students',
     status_code=201,
     summary='Добавление пользователя студента',
     description='Эндпоинт принимает данные нового пользователя студента и создает его. '

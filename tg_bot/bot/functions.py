@@ -3,7 +3,8 @@ from aiogram.types import Message, CallbackQuery
 
 from bot.api_helpers.teachers.api_teacher_requests import get_teacher_request, get_lesson_request
 from bot.contexts import UploadFile
-from bot.keyboards.inline_keyboards import personal_files_kb, add_lesson_file_kb, add_lesson_homework_kb
+from bot.keyboards.inline_keyboards import personal_files_kb, lesson_files_kb, add_lesson_homework_kb, \
+    toggle_lesson_is_done_kb
 from bot.keyboards.reply_reyboards import teacher_menu_kb, student_menu_kb
 from config import STATIC_URL
 
@@ -38,7 +39,7 @@ async def show_personal_files(message: Message):
 
 async def show_lesson_details(message, lesson_id):
     lesson = await get_lesson_request(lesson_id)
-    lesson_text = f'Урок {lesson["name"]}:'
+    await message.answer(".", reply_markup=toggle_lesson_is_done_kb(lesson))
 
     materials = ''
     for material in lesson['files']:
@@ -51,7 +52,6 @@ async def show_lesson_details(message, lesson_id):
     homework_text = f'Домашние задания\n{homeworks}'
 
     assignments_text = 'Задания на проверку\n...'
-    await message.answer(lesson_text)
-    await message.answer(materials_text, reply_markup=add_lesson_file_kb(lesson_id))
+    await message.answer(materials_text, reply_markup=lesson_files_kb(lesson_id))
     await message.answer(homework_text, reply_markup=add_lesson_homework_kb(lesson_id))
     await message.answer(assignments_text)

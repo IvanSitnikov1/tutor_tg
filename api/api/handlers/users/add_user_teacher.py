@@ -4,7 +4,7 @@ from api.utils.users.add_user_teacher_util import add_user_teacher_util
 
 
 @user_router.post(
-    '/teacher',
+    '/teachers',
     status_code=201,
     summary='Добавление пользователя учителя',
     description='Эндпоинт принимает данные нового пользователя учителя и создает его. '
