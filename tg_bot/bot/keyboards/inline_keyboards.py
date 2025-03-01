@@ -24,7 +24,10 @@ def students_kb(students):
 def student_detail_kb(student):
     kb_list = []
     for lesson in student['lessons']:
-        lesson_button = InlineKeyboardButton(text=lesson['name'], callback_data=f'show_lesson:{lesson["id"]}:{student['id']}')
+        lesson_button = InlineKeyboardButton(
+            text=f'{'✅' if lesson['is_done'] else ''}{lesson['name']}',
+            callback_data=f'show_lesson:{lesson["id"]}:{student['id']}'
+        )
         delete_button = InlineKeyboardButton(text='🗑 Удалить', callback_data=f'delete_lesson:{lesson["id"]}')
         kb_list.append([lesson_button, delete_button])  # Располагаем кнопки в один ряд
 
@@ -35,11 +38,11 @@ def student_detail_kb(student):
 
 
 def lesson_files_kb(lesson_id, file_type):
-    kb_list = [[
-        InlineKeyboardButton(text='Add', callback_data=f'add_lesson_file:{lesson_id}'),
-        InlineKeyboardButton(text='Удалить все', callback_data=f'delete_all_lesson_files:{lesson_id}'),
-        InlineKeyboardButton(text='Удалить выборочно', callback_data=f'delete_lesson_files:{lesson_id}:{file_type}'),
-    ]]
+    kb_list = [
+        [InlineKeyboardButton(text='Add', callback_data=f'add_lesson_file:{lesson_id}')],
+        [InlineKeyboardButton(text='Delete all', callback_data=f'delete_all_lesson_files:{lesson_id}'),
+        InlineKeyboardButton(text='Delete multiple', callback_data=f'delete_lesson_files:{lesson_id}:{file_type}')],
+    ]
     keyboard = InlineKeyboardMarkup(inline_keyboard=kb_list)
     return keyboard
 
@@ -47,8 +50,8 @@ def lesson_files_kb(lesson_id, file_type):
 def lesson_homework_kb(lesson_id, file_type):
     kb_list = [[
         InlineKeyboardButton(text='Add', callback_data=f'add_lesson_homework:{lesson_id}'),
-        InlineKeyboardButton(text='Удалить все', callback_data=f'delete_all_lesson_homeworks:{lesson_id}'),
-        InlineKeyboardButton(text='Удалить выборочно', callback_data=f'delete_lesson_files:{lesson_id}:{file_type}'),
+        InlineKeyboardButton(text='Delete all', callback_data=f'delete_all_lesson_homeworks:{lesson_id}'),
+        InlineKeyboardButton(text='Delete multiple', callback_data=f'delete_lesson_files:{lesson_id}:{file_type}'),
     ]]
     keyboard = InlineKeyboardMarkup(inline_keyboard=kb_list)
     return keyboard
@@ -57,8 +60,8 @@ def lesson_homework_kb(lesson_id, file_type):
 def personal_files_kb(user_id):
     kb_list = [[
         InlineKeyboardButton(text='Add', callback_data=f'add_personal_file:{user_id}'),
-        InlineKeyboardButton(text='Удалить все', callback_data=f'delete_all_personal_files:{user_id}'),
-        InlineKeyboardButton(text='Удалить выборочно', callback_data=f'delete_personal_files'),
+        InlineKeyboardButton(text='Delete all', callback_data=f'delete_all_personal_files:{user_id}'),
+        InlineKeyboardButton(text='Delete multiple', callback_data=f'delete_personal_files'),
     ]]
     keyboard = InlineKeyboardMarkup(inline_keyboard=kb_list)
     return keyboard
@@ -66,7 +69,7 @@ def personal_files_kb(user_id):
 
 def toggle_lesson_is_done_kb(lesson):
     kb_list = [
-        [InlineKeyboardButton(text=f'Урок {lesson['name']} {'✅' if lesson['is_done'] else ''}', callback_data=f'toggle_lesson_is_done:{lesson['id']}')]
+        [InlineKeyboardButton(text=f'{'✅' if lesson['is_done'] else lesson['name']}', callback_data=f'toggle_lesson_is_done:{lesson['id']}')]
     ]
     keyboard = InlineKeyboardMarkup(inline_keyboard=kb_list)
     return keyboard
