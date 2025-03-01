@@ -3,7 +3,7 @@ from aiogram.types import ReplyKeyboardMarkup, KeyboardButton
 
 def teacher_menu_kb():
     kb_list = [
-        [KeyboardButton(text='Ученики')], [KeyboardButton(text='Личные файлы')]
+        [KeyboardButton(text='👤Ученики')], [KeyboardButton(text='📝Личные файлы')]
     ]
     keyboard = ReplyKeyboardMarkup(
         keyboard=kb_list,
@@ -13,9 +13,7 @@ def teacher_menu_kb():
     return keyboard
 
 def student_menu_kb():
-    kb_list = [
-        [KeyboardButton(text='Уроки')], [KeyboardButton(text='Какая-то кнопка)')]
-    ]
+    kb_list = [[KeyboardButton(text='📒Уроки')]]
     keyboard = ReplyKeyboardMarkup(
         keyboard=kb_list,
         resize_keyboard=True,

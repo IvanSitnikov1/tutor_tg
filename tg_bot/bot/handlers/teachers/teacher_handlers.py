@@ -18,10 +18,10 @@ from bot.routers import teacher_router
 async def handle_teacher_message(message: Message, state: FSMContext):
     if message.text == 'Меню':
         await show_teacher_menu(message)
-    elif message.text == 'Ученики':
+    elif message.text == '👤Ученики':
         current_user = await get_teacher_request(message.from_user.id)
         await message.answer('Ваши студенты:', reply_markup=students_kb(current_user['students']))
-    elif message.text == 'Личные файлы':
+    elif message.text == '📝Личные файлы':
         await show_personal_files(message)
     else:
         await state.update_data(lesson_name=message.text)

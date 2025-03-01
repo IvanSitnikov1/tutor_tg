@@ -48,21 +48,21 @@ def lesson_files_kb(lesson_id, file_type):
 
 
 def lesson_homework_kb(lesson_id, file_type):
-    kb_list = [[
-        InlineKeyboardButton(text='Add', callback_data=f'add_lesson_homework:{lesson_id}'),
-        InlineKeyboardButton(text='Delete all', callback_data=f'delete_all_lesson_homeworks:{lesson_id}'),
-        InlineKeyboardButton(text='Delete multiple', callback_data=f'delete_lesson_files:{lesson_id}:{file_type}'),
-    ]]
+    kb_list = [
+        [InlineKeyboardButton(text='Add', callback_data=f'add_lesson_homework:{lesson_id}')],
+        [InlineKeyboardButton(text='Delete all', callback_data=f'delete_all_lesson_homeworks:{lesson_id}'),
+        InlineKeyboardButton(text='Delete multiple', callback_data=f'delete_lesson_files:{lesson_id}:{file_type}')],
+    ]
     keyboard = InlineKeyboardMarkup(inline_keyboard=kb_list)
     return keyboard
 
 
 def personal_files_kb(user_id):
-    kb_list = [[
-        InlineKeyboardButton(text='Add', callback_data=f'add_personal_file:{user_id}'),
-        InlineKeyboardButton(text='Delete all', callback_data=f'delete_all_personal_files:{user_id}'),
-        InlineKeyboardButton(text='Delete multiple', callback_data=f'delete_personal_files'),
-    ]]
+    kb_list = [
+        [InlineKeyboardButton(text='Add', callback_data=f'add_personal_file:{user_id}')],
+        [InlineKeyboardButton(text='Delete all', callback_data=f'delete_all_personal_files:{user_id}'),
+        InlineKeyboardButton(text='Delete multiple', callback_data=f'delete_personal_files')],
+    ]
     keyboard = InlineKeyboardMarkup(inline_keyboard=kb_list)
     return keyboard
 

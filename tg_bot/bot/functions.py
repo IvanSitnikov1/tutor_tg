@@ -35,17 +35,30 @@ async def preparing_for_upload_file(call: CallbackQuery, state: FSMContext, file
 
 async def show_personal_files(message: Message):
     current_user = await get_teacher_request(message.from_user.id)
-    files_text = 'Файлы\n'
-    for file in current_user['personal_files']:
-        file_url = f"{STATIC_URL}{file['file_path']}"
+
+    material_files_image = []
+    files_text = '<b>Файлы</b>\n'
+    for personal_file in current_user['personal_files']:
+        file_url = (f"<a href='{STATIC_URL}{personal_file['file_path']}'>"
+                    f"{personal_file['file_path'].split('/')[-1]}</a>")
 
         # Проверяем, картинка ли это
-        if file['file_path'].endswith(('.png', '.jpg', '.jpeg', '.gif', '.webp')):
-            file_img = FSInputFile(f'/home/ivan/Projects/tutor_tg/static{file['file_path']}')
-            await message.answer_photo(photo=file_img)
+        if personal_file['file_path'].endswith(('.png', '.jpg', '.jpeg', '.gif', '.webp')):
+            file = FSInputFile(f'/home/ivan/Projects/tutor_tg/static{personal_file['file_path']}')
+            material_files_image.append(file)
         else:
             files_text += f"{file_url}\n--------\n"
-    await message.answer(files_text, reply_markup=personal_files_kb(current_user['id']))
+    if material_files_image:
+        await message.answer(files_text, parse_mode='HTML')
+        for file in material_files_image[:-1]:
+            await message.answer_photo(photo=file)
+        await message.answer_photo(
+            photo=material_files_image[-1], reply_markup=personal_files_kb(current_user['id'])
+        )
+    else:
+        await message.answer(
+            files_text, reply_markup=personal_files_kb(current_user['id']), parse_mode='HTML'
+        )
 
 
 async def show_lesson_details(message, lesson_id):
