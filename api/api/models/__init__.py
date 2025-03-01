@@ -6,9 +6,11 @@ __all__ = [
     'Lesson',
     'File',
     'Homework',
-    'PersonalFile'
+    'PersonalFile',
+    'CompletedHomeworks',
+    'CommentsByCompletedHomeworks',
 ]
 
 from .user import Base, User, Teacher, Student
 from .lesson import Base, Lesson
-from .file import Base, File, Homework, PersonalFile
+from .file import Base, File, Homework, PersonalFile, CompletedHomeworks, CommentsByCompletedHomeworks

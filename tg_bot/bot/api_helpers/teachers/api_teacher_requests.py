@@ -4,13 +4,13 @@ from bot.api_helpers.request_decorator import request_decorator
 
 @request_decorator
 async def get_teacher_request(teacher_tg_id):
-    url = f'{API_URL}/users/teachers/{teacher_tg_id}'
+    url = f'{API_URL}/users/teachers/teacher/{teacher_tg_id}'
     return url, 'GET', None, 200
 
 
 @request_decorator
 async def get_student_request(student_id):
-    url = f'{API_URL}/users/students/{student_id}'
+    url = f'{API_URL}/users/students/student/{student_id}'
     return url, 'GET', None, 200
 
 
@@ -54,6 +54,17 @@ async def upload_homework_in_lesson_request(author_id, lesson_id, file_name):
         'author_id': author_id,
         'lesson_id': lesson_id,
         'file_path': f'/homeworks/{file_name}',
+    }
+    return url, 'POST', data, 200
+
+
+@request_decorator
+async def upload_comments_in_lesson_request(author_id, lesson_id, file_name):
+    url = f'{API_URL}/lessons/comments_by_completed_homeworks'
+    data = {
+        'author_id': author_id,
+        'lesson_id': lesson_id,
+        'file_path': f'/comments/{file_name}',
     }
     return url, 'POST', data, 200
 

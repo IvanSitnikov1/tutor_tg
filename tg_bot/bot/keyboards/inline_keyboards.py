@@ -96,3 +96,25 @@ def delete_personal_files_kb(user, selected_files):
 
     keyboard = InlineKeyboardMarkup(inline_keyboard=kb_list)
     return keyboard
+
+
+def show_lessons_student_kb(lessons):
+    kb_list = []
+    for lesson in lessons:
+        kb_list.append([InlineKeyboardButton(
+            text=lesson['name'], callback_data=f'show_lesson_student_detail:{lesson['id']}')]
+        )
+        keyboard = InlineKeyboardMarkup(inline_keyboard=kb_list)
+        return keyboard
+
+
+def add_solution_kb(lesson_id):
+    kb_list = [[InlineKeyboardButton(text='Добавить решение', callback_data=f'add_lesson_solution:{lesson_id}')]]
+    keyboard = InlineKeyboardMarkup(inline_keyboard=kb_list)
+    return keyboard
+
+
+def add_comment_kb(lesson_id):
+    kb_list = [[InlineKeyboardButton(text='Добавить комментарий', callback_data=f'add_lesson_comment:{lesson_id}')]]
+    keyboard = InlineKeyboardMarkup(inline_keyboard=kb_list)
+    return keyboard

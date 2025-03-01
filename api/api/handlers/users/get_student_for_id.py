@@ -3,7 +3,7 @@ from api.utils.users.get_student_for_id_util import get_student_for_id_util
 
 
 @user_router.get(
-    '/students/{student_id}',
+    '/students/student/{student_id}',
     summary='Получение данных ученика по id',
     description='Эндпоинт возвращает данные ученика',
 )

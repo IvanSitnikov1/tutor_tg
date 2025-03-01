@@ -15,7 +15,9 @@ async def delete_list_homeworks_util(homeworks_data: SDeleteFiles, session: Asyn
     files = result.scalars().all()
 
     for file in files:
-        os.remove(f'/home/ivan/Projects/tutor_tg/static{file.file_path}')
+        path = f'/home/ivan/Projects/tutor_tg/static{file.file_path}'
+        if os.path.exists(path):
+            os.remove(path)
 
     stmt = delete(Homework).where(Homework.id.in_(homeworks_data.files_ids))
     result = await session.execute(stmt)

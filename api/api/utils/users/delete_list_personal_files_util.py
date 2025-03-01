@@ -15,7 +15,9 @@ async def delete_list_personal_files_util(personal_files_data: SDeleteFiles, ses
     files = result.scalars().all()
 
     for file in files:
-        os.remove(f'/home/ivan/Projects/tutor_tg/static{file.file_path}')
+        path = f'/home/ivan/Projects/tutor_tg/static{file.file_path}'
+        if os.path.exists(path):
+            os.remove(path)
 
     stmt = delete(PersonalFile).where(PersonalFile.id.in_(personal_files_data.files_ids))
     result = await session.execute(stmt)

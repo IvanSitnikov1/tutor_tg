@@ -25,5 +25,5 @@ async def set_teacher(call: CallbackQuery, state: FSMContext):
 @auth_router.callback_query(F.data == 'set_student', Form.user_type)
 async def set_student(call: CallbackQuery, state: FSMContext):
     await state.update_data(user_type='students')
-    await call.message.answer('Введите id вашего учителя:')
+    await call.message.answer('Введите код, полученный от вашего учителя:')
     await state.set_state(Form.teacher_id)

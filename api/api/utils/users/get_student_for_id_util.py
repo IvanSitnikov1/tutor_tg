@@ -16,7 +16,9 @@ async def get_student_for_id_util(student_id: int, session: AsyncSession):
         .where(Student.id == student_id)
         .options(
             joinedload(Student.lessons).joinedload(Lesson.files),
-            joinedload(Student.lessons).joinedload(Lesson.homeworks)
+            joinedload(Student.lessons).joinedload(Lesson.homeworks),
+            joinedload(Student.lessons).joinedload(Lesson.completed_homeworks),
+            joinedload(Student.lessons).joinedload(Lesson.comments_by_completed_homeworks),
         )
     )
 

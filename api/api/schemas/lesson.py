@@ -11,6 +11,8 @@ class SLesson(SLessonAdd):
     is_done: bool
     files: list['SFile']
     homeworks: list['SFile']
+    completed_homeworks: list['SFile']
+    comments_by_completed_homeworks: list['SFile']
 
     model_config = ConfigDict(from_attributes=True)
 

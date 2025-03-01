@@ -44,7 +44,7 @@ class Student(User):
     teacher_id: Mapped[int] = mapped_column(ForeignKey("teachers.id", ondelete='CASCADE'), nullable=False)
 
     lessons: Mapped[list["Lesson"]] = relationship('Lesson', back_populates='student')
-    teacher: Mapped[int] = relationship(
+    teacher: Mapped['Teacher'] = relationship(
         'Teacher',
         back_populates='students',
         foreign_keys=[teacher_id],

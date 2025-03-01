@@ -65,6 +65,11 @@ async def add_lesson_homework(call: CallbackQuery, state: FSMContext):
     await preparing_for_upload_file(call, state, "homeworks")
 
 
+@teacher_router.callback_query(lambda c: c.data.startswith('add_lesson_comment:'))
+async def add_lesson_comment(call: CallbackQuery, state: FSMContext):
+    await preparing_for_upload_file(call, state, "comments")
+
+
 @teacher_router.callback_query(lambda c: c.data.startswith('add_personal_file:'))
 async def add_personal_file(call: CallbackQuery, state: FSMContext):
     user_id = call.data.split(':')[1]

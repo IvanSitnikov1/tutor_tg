@@ -39,3 +39,11 @@ class PersonalFile(Base):
     file_path: Mapped[str] = mapped_column(String, nullable=False)
 
     author: Mapped['Teacher'] = relationship("Teacher", back_populates='personal_files')
+
+
+class CompletedHomeworks(BaseFile):
+    __tablename__ = "completed_homeworks"
+
+
+class CommentsByCompletedHomeworks(BaseFile):
+    __tablename__ = "comments_by_completed_homeworks"
