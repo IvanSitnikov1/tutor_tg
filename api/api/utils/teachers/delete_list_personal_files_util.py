@@ -1,5 +1,6 @@
 import os
 
+from fastapi import HTTPException
 from sqlalchemy import delete, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -22,7 +23,9 @@ async def delete_list_personal_files_util(personal_files_data: SDeleteFiles, ses
     stmt = delete(PersonalFile).where(PersonalFile.id.in_(personal_files_data.files_ids))
     result = await session.execute(stmt)
     await session.commit()
+
     if result.rowcount:
         return {
-            "data": "Персональные файлы пользователя успешно удалены"
+            "detail": "Выбранные персональные файлы успешно удалены"
         }
+    raise HTTPException(status_code=400, detail="Не удалось удалить выбранные персональные файлы")

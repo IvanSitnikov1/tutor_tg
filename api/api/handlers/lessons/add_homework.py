@@ -6,8 +6,6 @@ from api.schemas.lesson import SFileAdd
 
 @lesson_router.post(
     '/homeworks',
-    summary='Получение данных ученика по id',
-    description='Эндпоинт возвращает данные ученика',
 )
 async def add_homework(file: SFileAdd):
     return await add_homework_util(file)

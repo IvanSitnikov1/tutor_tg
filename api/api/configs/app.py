@@ -20,6 +20,7 @@ app.mount("/static", StaticFiles(directory="../static"), name="static")
 
 class Settings(BaseSettings):
     DATABASE_URL: str
+    STATIC_PATH: str
     class Config:
         env_file = ".env"
 

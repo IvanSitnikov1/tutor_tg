@@ -1,33 +1,15 @@
-from pydantic import BaseModel, ConfigDict
+from pydantic import BaseModel
 
 
 class SLessonAdd(BaseModel):
     name: str
     student_id: int
-
-
-class SLesson(SLessonAdd):
-    id: int
-    is_done: bool
-    files: list['SFile']
-    homeworks: list['SFile']
-    completed_homeworks: list['SFile']
-    comments_by_completed_homeworks: list['SFile']
-
-    model_config = ConfigDict(from_attributes=True)
+    author_id: int
 
 
 class SFileAdd(BaseModel):
-    author_id: int
     lesson_id: int
     file_path: str
-
-
-class SFile(SFileAdd):
-    id: int
-
-    class Config:
-        from_attributes = True
 
 
 class SDeleteFiles(BaseModel):

@@ -1,20 +1,19 @@
 from typing import TYPE_CHECKING
-
-from sqlalchemy.orm import Mapped, mapped_column, relationship
-from sqlalchemy import Integer, String, ForeignKey, BigInteger
-
-from api.configs.database import Base
-
 if TYPE_CHECKING:
     from api.models import Lesson, PersonalFile
+
+from sqlalchemy.orm import Mapped, mapped_column, relationship
+from sqlalchemy import String, ForeignKey, BigInteger
+
+from api.configs.database import Base
 
 
 class User(Base):
     __tablename__ = "users"
-    id: Mapped[int] = mapped_column(Integer, primary_key=True)
-    username: Mapped[str] = mapped_column(String, nullable=False)
-    tg_id: Mapped[int] = mapped_column(BigInteger, unique=True, nullable=False)
-    type: Mapped[str] = mapped_column(String, nullable=False)  # Для определения типа ('teacher' или 'student')
+
+    id: Mapped[int] = mapped_column(BigInteger, primary_key=True)
+    username: Mapped[str] = mapped_column(String, unique=True, nullable=False)
+    type: Mapped[str] = mapped_column(String, nullable=False)
 
     __mapper_args__ = {
         "polymorphic_identity": "user",  # Определение базового типа
@@ -24,14 +23,17 @@ class User(Base):
 
 class Teacher(User):
     __tablename__ = "teachers"
+
     id: Mapped[int] = mapped_column(ForeignKey("users.id", ondelete='CASCADE'), primary_key=True)
 
+    lessons: Mapped[list["Lesson"]] = relationship('Lesson', back_populates='author')
     students: Mapped[list["Student"]] = relationship(
         "Student",
         back_populates="teacher",
         foreign_keys="Student.teacher_id",
     )
-    personal_files: Mapped[list["PersonalFile"]] = relationship("PersonalFile", back_populates="author")
+    personal_files: Mapped[list["PersonalFile"]] = relationship(
+        "PersonalFile", back_populates="author")
 
     __mapper_args__ = {
         "polymorphic_identity": "teacher",
@@ -40,8 +42,15 @@ class Teacher(User):
 
 class Student(User):
     __tablename__ = "students"
-    id: Mapped[int] = mapped_column(ForeignKey("users.id", ondelete='CASCADE'), primary_key=True)
-    teacher_id: Mapped[int] = mapped_column(ForeignKey("teachers.id", ondelete='CASCADE'), nullable=False)
+
+    id: Mapped[int] = mapped_column(
+        ForeignKey("users.id", ondelete='CASCADE'),
+        primary_key=True,
+    )
+    teacher_id: Mapped[int] = mapped_column(
+        ForeignKey("teachers.id", ondelete='CASCADE'),
+        nullable=False,
+    )
 
     lessons: Mapped[list["Lesson"]] = relationship('Lesson', back_populates='student')
     teacher: Mapped['Teacher'] = relationship(

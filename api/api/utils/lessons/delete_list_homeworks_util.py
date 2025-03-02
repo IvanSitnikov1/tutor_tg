@@ -1,5 +1,6 @@
 import os
 
+from fastapi import HTTPException
 from sqlalchemy import delete, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -22,7 +23,9 @@ async def delete_list_homeworks_util(homeworks_data: SDeleteFiles, session: Asyn
     stmt = delete(Homework).where(Homework.id.in_(homeworks_data.files_ids))
     result = await session.execute(stmt)
     await session.commit()
+
     if result.rowcount:
         return {
-            "data": "Домашние задания успешно удалены"
+            "detail": "Домашние задания успешно удалены"
         }
+    raise HTTPException(status_code=400, detail="Не удалось удалить домашние задания")
