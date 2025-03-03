@@ -3,23 +3,23 @@ from config import API_URL
 
 
 @request_decorator
-async def get_students_list_tg_id():
-    url = f'{API_URL}/users/students/list_tg_id'
-    return url, 'GET', None, 200
-
-
-@request_decorator
-async def get_student_request(student_tg_id):
-    url = f'{API_URL}/users/students/student/tg_id/{student_tg_id}'
-    return url, 'GET', None, 200
-
-
-@request_decorator
-async def upload_solution_in_lesson_request(author_id, lesson_id, file_name):
-    url = f'{API_URL}/lessons/completed_homeworks'
+async def create_student_request(username: str, student_id: int, teacher_id: int):
+    url = f'{API_URL}/students'
     data = {
-        'author_id': author_id,
-        'lesson_id': lesson_id,
-        'file_path': f'/solutions/{file_name}',
+        'username': username,
+        'id': student_id,
+        'teacher_id': teacher_id,
     }
-    return url, 'POST', data, 200
+    return url, 'POST', data
+
+
+@request_decorator
+async def get_student_request(student_id):
+    url = f'{API_URL}/students/{student_id}'
+    return url, 'GET', None
+
+
+@request_decorator
+async def get_students_list_ids_request():
+    url = f'{API_URL}/students'
+    return url, 'GET', None
