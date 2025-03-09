@@ -13,9 +13,12 @@ async def add_lesson_util(lesson: SLessonAdd, session: AsyncSession):
     session.add(new_lesson)
 
     try:
+        await session.flush()
         await session.commit()
+        await session.refresh(new_lesson)
         return {
-            "detail": "Урок добавлен успешно"
+            "data": new_lesson,
+            "detail": "Урок добавлен успешно",
         }
     except SQLAlchemyError:
         raise HTTPException(status_code=400, detail="Ошибка при добавлении урока")

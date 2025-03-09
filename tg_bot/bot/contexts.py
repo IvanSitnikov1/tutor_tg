@@ -17,6 +17,7 @@ class UploadFile(StatesGroup):
     lesson_id = State()
     file = State()
     file_type = State()
+    file_name = State()
 
 
 class SelectedFiles(StatesGroup):

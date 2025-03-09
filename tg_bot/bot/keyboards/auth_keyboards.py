@@ -1,4 +1,4 @@
-
+from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 
 
 def user_type_kb():
