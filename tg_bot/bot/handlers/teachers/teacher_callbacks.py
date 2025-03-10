@@ -2,13 +2,14 @@ from aiogram.fsm.context import FSMContext
 from aiogram.types import CallbackQuery
 
 from bot.api_helpers.lessons.api_lesson_requests import toggle_lesson_is_done_request, \
-    get_lesson_request, delete_lesson_request
+    get_lesson_request, delete_lesson_request, delete_files_in_lesson_request, \
+    delete_homeworks_in_lesson_request
 from bot.api_helpers.students.api_student_requests import get_student_request
 from bot.api_helpers.teachers.api_teacher_requests import get_teacher_request, delete_personal_files_request
 from bot.contexts import AddLesson, UploadFile
-from bot.functions.lessons.lesson_funcs import show_lesson_for_teacher_details
+from bot.functions.lessons.lesson_funcs import show_lesson_for_teacher_details, pre_upload_file
 from bot.keyboards.teacher_keyboards import delete_personal_files_by_ids_kb, lessons_of_student_kb, \
-    toggle_lesson_is_done_kb
+    toggle_lesson_is_done_kb, delete_files_kb
 from bot.routers import teacher_router
 
 
@@ -56,21 +57,21 @@ async def delete_lesson(call: CallbackQuery):
     )
 
 
-# @teacher_router.callback_query(lambda c: c.data.startswith('add_lesson_file:'))
-# async def add_lesson_file(call: CallbackQuery, state: FSMContext):
-#     await preparing_for_upload_file(call, state, "files")
-#
-#
-# @teacher_router.callback_query(lambda c: c.data.startswith('add_lesson_homework:'))
-# async def add_lesson_homework(call: CallbackQuery, state: FSMContext):
-#     await preparing_for_upload_file(call, state, "homeworks")
-#
-#
-# @teacher_router.callback_query(lambda c: c.data.startswith('add_lesson_comment:'))
-# async def add_lesson_comment(call: CallbackQuery, state: FSMContext):
-#     await preparing_for_upload_file(call, state, "comments")
-#
-#
+@teacher_router.callback_query(lambda c: c.data.startswith('add_lesson_file:'))
+async def add_lesson_file(call: CallbackQuery, state: FSMContext):
+    await pre_upload_file(call, state, "files")
+
+
+@teacher_router.callback_query(lambda c: c.data.startswith('add_lesson_homework:'))
+async def add_lesson_homework(call: CallbackQuery, state: FSMContext):
+    await pre_upload_file(call, state, "homeworks")
+
+
+@teacher_router.callback_query(lambda c: c.data.startswith('add_lesson_comment:'))
+async def add_lesson_comment(call: CallbackQuery, state: FSMContext):
+    await pre_upload_file(call, state, "comments")
+
+
 @teacher_router.callback_query(lambda c: c.data.startswith('add_personal_file:'))
 async def add_personal_file(call: CallbackQuery, state: FSMContext):
     user_id = call.data.split(':')[1]
@@ -90,57 +91,67 @@ async def toggle_lesson_is_done(call: CallbackQuery):
     # Обновляем существующее сообщение с кнопкой
     await call.message.edit_reply_markup(reply_markup=toggle_lesson_is_done_kb(lesson.get('data')))
     await call.answer("Статус урока изменен", show_alert=True)
-#
-#
-# @teacher_router.callback_query(lambda c: c.data.startswith('delete_lesson_files:'))
-# async def delete_lesson_files(call: CallbackQuery, state: FSMContext):
-#     lesson_id = call.data.split(':')[1]
-#     file_type = call.data.split(':')[2]
-#     lesson = await get_lesson_request(lesson_id)
-#     await state.update_data(selected_files={"1": False})
-#     current_state = await state.get_data()
-#     await call.message.answer(
-#         text='Выберите материалы для удаления',
-#         reply_markup=delete_files_kb(lesson, current_state['selected_files'], file_type)
-#     )
-#
-#
-# @teacher_router.callback_query(lambda c: c.data.startswith('toggle_file:'))
-# async def toggle_file(call: CallbackQuery, state: FSMContext):
-#     file_id = call.data.split(':')[1]
-#     lesson_id = call.data.split(':')[2]
-#     file_type = call.data.split(':')[3]
-#     current_state = await state.get_data()
-#     selected_files = current_state['selected_files']
-#     selected_files[file_id] = not selected_files.get(file_id, False)
-#     await state.update_data(selected_files=selected_files)
-#     lesson = await get_lesson_request(lesson_id)
-#     await call.message.edit_reply_markup(reply_markup=delete_files_kb(lesson, selected_files, file_type))
-#     await call.answer()
-#
-#
-# @teacher_router.callback_query(lambda c: c.data.startswith('delete_selected_files:'))
-# async def delete_selected_files(call: CallbackQuery, state: FSMContext):
-#     lesson_id = call.data.split(':')[1]
-#     file_type = call.data.split(':')[2]
-#     current_state = await state.get_data()
-#     selected_files = current_state['selected_files']
-#     files_to_delete = [file_id for file_id, selected in selected_files.items() if selected]
-#     if files_to_delete:
-#         if file_type == 'files':
-#             await delete_files_in_lesson_request(files_to_delete)
-#         elif file_type == 'homeworks':
-#             await delete_homeworks_in_lesson_request(files_to_delete)
-#
-#         await call.answer("Выбранные материалы удалены", show_alert=True)
-#         await state.update_data(selected_files={"1": False})
-#     else:
-#         await call.answer("Нет выбранных записей", show_alert=True)
-#
-#     lesson = await get_lesson_request(lesson_id)
-#     await call.message.edit_reply_markup(reply_markup=delete_files_kb(lesson, selected_files, file_type))
-#
-#
+
+
+@teacher_router.callback_query(lambda c: c.data.startswith('delete_lesson_files:'))
+async def delete_lesson_files(call: CallbackQuery, state: FSMContext):
+    lesson_id = call.data.split(':')[1]
+    file_type = call.data.split(':')[2]
+    lesson = await get_lesson_request(lesson_id)
+    current_state = await state.get_data()
+    await call.message.answer(
+        text='Выберите материалы для удаления',
+        reply_markup=delete_files_kb(
+            lesson.get('data', {}),
+            current_state.get('selected_files', {}),
+            file_type,
+        )
+    )
+
+
+@teacher_router.callback_query(lambda c: c.data.startswith('toggle_file:'))
+async def toggle_file(call: CallbackQuery, state: FSMContext):
+    file_id = call.data.split(':')[1]
+    lesson_id = call.data.split(':')[2]
+    file_type = call.data.split(':')[3]
+
+    lesson = await get_lesson_request(lesson_id)
+    current_state = await state.get_data()
+    selected_files = current_state.get('selected_files', {})
+    selected_files[file_id] = not selected_files.get(file_id, False)
+    await state.update_data(selected_files=selected_files)
+    await call.message.edit_reply_markup(reply_markup=delete_files_kb(
+        lesson.get('data', {}), selected_files, file_type
+    ))
+    await call.answer()
+
+
+@teacher_router.callback_query(lambda c: c.data.startswith('delete_selected_files:'))
+async def delete_selected_files(call: CallbackQuery, state: FSMContext):
+    lesson_id = call.data.split(':')[1]
+    file_type = call.data.split(':')[2]
+
+    current_state = await state.get_data()
+    selected_files = current_state.get('selected_files', {})
+
+    files_to_delete = [file_id for file_id, is_selected in selected_files.items() if is_selected]
+    if files_to_delete:
+        if file_type == 'files':
+            response = await delete_files_in_lesson_request(files_to_delete)
+        else:
+            response = await delete_homeworks_in_lesson_request(files_to_delete)
+
+        await call.answer(response.get('detail'), show_alert=True)
+        await state.clear()
+    else:
+        await call.answer("Нет выбранных записей", show_alert=True)
+
+    lesson = await get_lesson_request(lesson_id)
+    await call.message.edit_reply_markup(reply_markup=delete_files_kb(
+        lesson.get('data', {}), {}, file_type
+    ))
+
+
 @teacher_router.callback_query(lambda c: c.data == 'pre_delete_personal_files')
 async def pre_delete_personal_files(call: CallbackQuery, state: FSMContext):
     user = await get_teacher_request(call.from_user.id)
@@ -180,4 +191,5 @@ async def delete_selected_personal_files(call: CallbackQuery, state: FSMContext)
 
     user = await get_teacher_request(call.from_user.id)
     await call.message.edit_reply_markup(reply_markup=delete_personal_files_by_ids_kb(
-        user.get('data'), selected_files))
+        user.get('data'), {}
+    ))

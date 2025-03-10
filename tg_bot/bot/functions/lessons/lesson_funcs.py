@@ -1,12 +1,15 @@
 import os
 
 from aiogram.fsm.context import FSMContext
-from aiogram.types import Message, FSInputFile
+from aiogram.types import Message, FSInputFile, CallbackQuery
 
 from bot.api_helpers.lessons.api_lesson_requests import upload_file_in_lesson_request, \
     upload_homework_in_lesson_request, upload_solution_in_lesson_request, \
     upload_comments_in_lesson_request, get_lesson_request
-from bot.api_helpers.teachers.api_teacher_requests import upload_personal_file_request
+from bot.api_helpers.students.api_student_requests import get_student_request
+from bot.api_helpers.teachers.api_teacher_requests import upload_personal_file_request, \
+    get_teacher_request
+from bot.contexts import UploadFile
 from bot.keyboards.teacher_keyboards import toggle_lesson_is_done_kb, lesson_files_kb, \
     lesson_homework_kb, add_comment_kb
 from config import STATIC_URL
@@ -47,19 +50,15 @@ async def save_file_in_db(state):
         return await upload_personal_file_request(state_data.get('author_id'), state_data.get('file_name'))
 
 
-# async def preparing_for_upload_file(call: CallbackQuery, state: FSMContext, file_type: str):
-#     lesson_id = call.data.split(':')[1]
-#     if file_type in ['files', 'homeworks', 'comments']:
-#         author = await get_teacher_request(call.from_user.id)
-#     else:
-#         author = await get_student_request(call.from_user.id)
-#
-#     await state.clear()
-#     await state.update_data(file_type=file_type, lesson_id=lesson_id, author_id=author['id'])
-#     await call.message.answer("📄 Пожалуйста, загрузите файл.")
-#     await state.set_state(UploadFile.file)
-#
-#
+async def pre_upload_file(call: CallbackQuery, state: FSMContext, file_type: str):
+    lesson_id = call.data.split(':')[1]
+
+    await state.clear()
+    await state.update_data(file_type=file_type, lesson_id=lesson_id)
+    await call.message.answer("📄 Пожалуйста, загрузите файл.")
+    await state.set_state(UploadFile.file)
+
+
 # async def show_lesson_by_student_details(message, lesson_id):
 #     lesson = await get_lesson_request(lesson_id)
 #

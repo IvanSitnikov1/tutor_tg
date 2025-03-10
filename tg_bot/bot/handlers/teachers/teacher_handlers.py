@@ -54,9 +54,9 @@ async def handle_upload_file(message: Message, state: FSMContext):
     state_data = await state.get_data()
     # if state_data.get('file_type') in ['solutions', 'comments']:
     #     await show_lesson_by_student_details(message, state_data.get('lesson_id'))
-    # elif state_data.get('file_type') in ['files', 'homeworks']:
-    #     await show_lesson_details(message, state_data['lesson_id'])
-    if state_data.get('file_type') == 'personal':
+    if state_data.get('file_type') in ['files', 'homeworks', 'comments']:
+        await show_lesson_for_teacher_details(message, state_data.get('lesson_id'))
+    elif state_data.get('file_type') == 'personal':
         await show_personal_files(message)
 
     await state.clear()

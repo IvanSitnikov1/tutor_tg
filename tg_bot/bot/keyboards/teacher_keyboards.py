@@ -86,21 +86,27 @@ def toggle_lesson_is_done_kb(lesson):
     ]
     keyboard = InlineKeyboardMarkup(inline_keyboard=kb_list)
     return keyboard
-#
-#
-# def delete_files_kb(lesson, selected_files, file_type):
-#     kb_list = []
-#     for file in lesson[file_type]:
-#         is_selected = selected_files.get(str(file['id']), False)
-#         checkbox = '✅' if is_selected else ''
-#         file_button = InlineKeyboardButton(text=f'{checkbox} {file['file_path']}', callback_data=f"toggle_file:{file['id']}:{lesson['id']}:{file_type}")
-#         kb_list.append([file_button])
-#     kb_list.append([InlineKeyboardButton(text="Удалить выбранное", callback_data=f'delete_selected_files:{lesson['id']}:{file_type}')])
-#
-#     keyboard = InlineKeyboardMarkup(inline_keyboard=kb_list)
-#     return keyboard
-#
-#
+
+
+def delete_files_kb(lesson, selected_files, file_type):
+    kb_list = []
+    for file in lesson.get(file_type):
+        is_selected = selected_files.get(str(file.get('id')), False)
+        checkbox = '✅' if is_selected else ''
+        file_button = InlineKeyboardButton(
+            text=f'{checkbox} {file.get('file_path')}',
+            callback_data=f"toggle_file:{file.get('id')}:{lesson.get('id')}:{file_type}",
+        )
+        kb_list.append([file_button])
+
+    kb_list.append([InlineKeyboardButton(
+        text="Delete files",
+        callback_data=f'delete_selected_files:{lesson.get('id')}:{file_type}'
+    )])
+    keyboard = InlineKeyboardMarkup(inline_keyboard=kb_list)
+    return keyboard
+
+
 def delete_personal_files_by_ids_kb(user, selected_files):
     kb_list = []
     for file in user.get('personal_files'):
@@ -118,6 +124,6 @@ def delete_personal_files_by_ids_kb(user, selected_files):
 
 
 def add_comment_kb(lesson_id):
-    kb_list = [[InlineKeyboardButton(text='Добавить комментарий', callback_data=f'add_lesson_comment:{lesson_id}')]]
+    kb_list = [[InlineKeyboardButton(text='Add comment', callback_data=f'add_lesson_comment:{lesson_id}')]]
     keyboard = InlineKeyboardMarkup(inline_keyboard=kb_list)
     return keyboard
