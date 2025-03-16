@@ -3,11 +3,12 @@ from aiogram.types import CallbackQuery
 
 from bot.api_helpers.lessons.api_lesson_requests import toggle_lesson_is_done_request, \
     get_lesson_request, delete_lesson_request, delete_files_in_lesson_request, \
-    delete_homeworks_in_lesson_request
+    delete_homeworks_in_lesson_request, delete_all_files_requests
 from bot.api_helpers.students.api_student_requests import get_student_request
 from bot.api_helpers.teachers.api_teacher_requests import get_teacher_request, delete_personal_files_request
 from bot.contexts import AddLesson, UploadFile
 from bot.functions.lessons.lesson_funcs import show_lesson_for_teacher_details, pre_upload_file
+from bot.functions.teachers.teacher_funcs import show_personal_files
 from bot.keyboards.teacher_keyboards import delete_personal_files_by_ids_kb, lessons_of_student_kb, \
     toggle_lesson_is_done_kb, delete_files_kb
 from bot.routers import teacher_router
@@ -196,3 +197,24 @@ async def delete_selected_personal_files(call: CallbackQuery, state: FSMContext)
     await call.message.edit_reply_markup(reply_markup=delete_personal_files_by_ids_kb(
         user.get('data'), {}
     ))
+
+
+@teacher_router.callback_query(lambda c: c.data.startswith('delete_all_lesson_files:'))
+async def delete_all_lesson_files(call: CallbackQuery):
+    lesson_id = call.data.split(':')[1]
+    file_type = call.data.split(':')[2]
+
+    response = await delete_all_files_requests(lesson_id, file_type)
+    await call.message.answer(response.get('detail'))
+    await show_lesson_for_teacher_details(call.message, lesson_id)
+
+
+@teacher_router.callback_query(lambda c: c.data.startswith('delete_all_personal_files:'))
+async def delete_all_personal_files(call: CallbackQuery):
+    user_id = call.data.split(':')[1]
+
+    user = await get_teacher_request(user_id)
+    personal_files_ids = [file.get('id') for file in user.get('data', {}).get('personal_files')]
+    response = await delete_personal_files_request(personal_files_ids)
+    await call.message.answer(response.get('detail'))
+    await show_personal_files(call.message)

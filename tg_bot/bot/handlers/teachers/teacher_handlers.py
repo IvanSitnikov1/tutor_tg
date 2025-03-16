@@ -42,7 +42,7 @@ async def handle_teacher_message(message: Message, state: FSMContext):
 
 
 @teacher_router.message(
-    lambda message: message.document or message.photo and message.from_user.id not in STUDENTS,
+    lambda message: (message.document or message.photo) and message.from_user.id not in STUDENTS,
     UploadFile.file,
 )
 async def handle_upload_file(message: Message, state: FSMContext):
@@ -51,8 +51,6 @@ async def handle_upload_file(message: Message, state: FSMContext):
 
     await message.answer(f'{saved_file.get('detail')}')
     state_data = await state.get_data()
-    # if state_data.get('file_type') in ['solutions', 'comments']:
-    #     await show_lesson_by_student_details(message, state_data.get('lesson_id'))
     if state_data.get('file_type') in ['files', 'homeworks', 'comments']:
         await show_lesson_for_teacher_details(message, state_data.get('lesson_id'))
     elif state_data.get('file_type') == 'personal':

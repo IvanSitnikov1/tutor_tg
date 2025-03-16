@@ -50,7 +50,7 @@ def lessons_of_student_kb(student):
 def lesson_files_kb(lesson_id, file_type):
     kb_list = [
         [InlineKeyboardButton(text='Add', callback_data=f'add_lesson_file:{lesson_id}')],
-        [InlineKeyboardButton(text='Delete all', callback_data=f'delete_all_lesson_files:{lesson_id}'),
+        [InlineKeyboardButton(text='Delete all', callback_data=f'delete_all_lesson_files:{lesson_id}:{file_type}'),
         InlineKeyboardButton(text='Delete multiple', callback_data=f'delete_lesson_files:{lesson_id}:{file_type}')],
     ]
     keyboard = InlineKeyboardMarkup(inline_keyboard=kb_list)
@@ -60,7 +60,7 @@ def lesson_files_kb(lesson_id, file_type):
 def lesson_homework_kb(lesson_id, file_type):
     kb_list = [
         [InlineKeyboardButton(text='Add', callback_data=f'add_lesson_homework:{lesson_id}')],
-        [InlineKeyboardButton(text='Delete all', callback_data=f'delete_all_lesson_homeworks:{lesson_id}'),
+        [InlineKeyboardButton(text='Delete all', callback_data=f'delete_all_lesson_files:{lesson_id}:{file_type}'),
         InlineKeyboardButton(text='Delete multiple', callback_data=f'delete_lesson_files:{lesson_id}:{file_type}')],
     ]
     keyboard = InlineKeyboardMarkup(inline_keyboard=kb_list)
