@@ -1,6 +1,7 @@
 from aiogram import F
 from aiogram.fsm.context import FSMContext
 from aiogram.types import Message
+from aiogram.filters import Command
 
 from bot.contexts import UploadFile
 from bot.functions.lessons.lesson_funcs import upload_file_on_server, save_file_in_db, \
@@ -13,7 +14,10 @@ from bot.routers import student_router
 from bot.storage import STUDENTS
 
 
-@student_router.message(F.text, lambda message: message.from_user.id in STUDENTS)
+@student_router.message(
+    F.text.in_({'Меню', '📒Уроки'}),
+    lambda message: message.from_user.id in STUDENTS,
+)
 async def handle_student_message(message: Message):
     if message.text == 'Меню':
         await show_student_menu(message)
@@ -35,3 +39,11 @@ async def handle_upload_file(message: Message, state: FSMContext):
     await show_lesson_for_student_details(message, state_data.get('lesson_id'))
 
     await state.clear()
+
+
+@student_router.message()
+async def handle_unknown(message: Message):
+    # проверка есть ли пользователь
+    await message.answer("Извините, я не понимаю ваше сообщение. Попробуйте открыть "
+                         "меню(/menu).")
+    await message.answer('Для использования бота нужно зарегистрироваться(/start).')

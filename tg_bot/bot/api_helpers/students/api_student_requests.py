@@ -23,3 +23,9 @@ async def get_student_request(student_id):
 async def get_students_list_ids_request():
     url = f'{API_URL}/students'
     return url, 'GET', None
+
+
+@request_decorator
+async def delete_student_request(student_id):
+    url = f'{API_URL}/students/{student_id}'
+    return url, 'DELETE', None

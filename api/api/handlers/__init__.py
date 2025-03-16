@@ -25,3 +25,4 @@ from .teachers.get_teacher_by_id import teacher_router
 from .students.add_user_student import student_router
 from .students.get_student_by_id import student_router
 from .students.get_students_list_ids import student_router
+from .students.delete_user_student import student_router

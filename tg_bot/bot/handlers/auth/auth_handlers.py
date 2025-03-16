@@ -8,6 +8,7 @@ from bot.functions.students.student_funcs import show_student_menu
 from bot.keyboards.auth_keyboards import user_type_kb
 from bot.routers import auth_router
 from bot.contexts import Form
+from bot.storage import update_students
 
 
 @auth_router.message(Command('start'))
@@ -40,6 +41,7 @@ async def handle_set_teacher_for_student(message: Message, state: FSMContext):
     )
     await message.answer(new_user.get('detail'))
     if new_user.get('data'):
+        await update_students()
         await show_student_menu(message)
         await state.clear()
     else:

@@ -18,9 +18,14 @@ def students_kb(students):
     kb_list = []
     for student in students:
         student_name = student.get('username')
-        kb_list.append([InlineKeyboardButton(
-            text=student_name, callback_data=f'show_lessons_of_student:{student.get('id')}')]
-        )
+        kb_list.append([
+            InlineKeyboardButton(
+                text=student_name, callback_data=f'show_lessons_of_student:{student.get('id')}'
+            ),
+            InlineKeyboardButton(
+                text='🗑 Delete', callback_data=f'delete_student:{student.get('id')}'
+            )
+        ])
     keyboard = InlineKeyboardMarkup(inline_keyboard=kb_list)
     return keyboard
 

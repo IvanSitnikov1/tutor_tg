@@ -4,13 +4,14 @@ from aiogram.types import CallbackQuery
 from bot.api_helpers.lessons.api_lesson_requests import toggle_lesson_is_done_request, \
     get_lesson_request, delete_lesson_request, delete_files_in_lesson_request, \
     delete_homeworks_in_lesson_request, delete_all_files_requests
-from bot.api_helpers.students.api_student_requests import get_student_request
+from bot.api_helpers.students.api_student_requests import get_student_request, \
+    delete_student_request
 from bot.api_helpers.teachers.api_teacher_requests import get_teacher_request, delete_personal_files_request
 from bot.contexts import AddLesson, UploadFile
 from bot.functions.lessons.lesson_funcs import show_lesson_for_teacher_details, pre_upload_file
 from bot.functions.teachers.teacher_funcs import show_personal_files
 from bot.keyboards.teacher_keyboards import delete_personal_files_by_ids_kb, lessons_of_student_kb, \
-    toggle_lesson_is_done_kb, delete_files_kb
+    toggle_lesson_is_done_kb, delete_files_kb, students_kb
 from bot.routers import teacher_router
 from bot.storage import STUDENTS
 
@@ -218,3 +219,17 @@ async def delete_all_personal_files(call: CallbackQuery):
     response = await delete_personal_files_request(personal_files_ids)
     await call.message.answer(response.get('detail'))
     await show_personal_files(call.message)
+
+
+@teacher_router.callback_query(lambda c: c.data.startswith('delete_student:'))
+async def delete_student(call: CallbackQuery):
+    student_id = call.data.split(':')[1]
+
+    deleted_student = await delete_student_request(student_id)
+    await call.message.answer(deleted_student.get('detail'))
+
+    current_user = await get_teacher_request(call.message.from_user.id)
+    await call.message.edit_text(
+        'Ваши студенты:',
+        reply_markup=students_kb(current_user.get('data', {}).get('students', [])),
+    )
