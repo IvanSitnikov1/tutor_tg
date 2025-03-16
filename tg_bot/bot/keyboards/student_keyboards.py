@@ -12,17 +12,22 @@ def student_menu_kb():
     return keyboard
 
 
-# def show_lessons_student_kb(lessons):
-#     kb_list = []
-#     for lesson in lessons:
-#         kb_list.append([InlineKeyboardButton(
-#             text=lesson['name'], callback_data=f'show_lesson_student_detail:{lesson['id']}')]
-#         )
-#         keyboard = InlineKeyboardMarkup(inline_keyboard=kb_list)
-#         return keyboard
-#
-#
-# def add_solution_kb(lesson_id):
-#     kb_list = [[InlineKeyboardButton(text='Добавить решение', callback_data=f'add_lesson_solution:{lesson_id}')]]
-#     keyboard = InlineKeyboardMarkup(inline_keyboard=kb_list)
-#     return keyboard
+def show_lessons_of_student_kb(lessons):
+    kb_list = []
+    print(lessons)
+    for lesson in lessons:
+        kb_list.append([InlineKeyboardButton(
+            text=lesson.get('name'),
+            callback_data=f'show_lesson:{lesson.get('id')}'),
+        ])
+    keyboard = InlineKeyboardMarkup(inline_keyboard=kb_list)
+    return keyboard
+
+
+def add_solution_kb(lesson_id):
+    kb_list = [[InlineKeyboardButton(
+        text='Добавить решение',
+        callback_data=f'add_solution:{lesson_id}'),
+    ]]
+    keyboard = InlineKeyboardMarkup(inline_keyboard=kb_list)
+    return keyboard

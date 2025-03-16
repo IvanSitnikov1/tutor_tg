@@ -1,20 +1,16 @@
-import os
-
 from aiogram import F
 from aiogram.fsm.context import FSMContext
 from aiogram.types import Message
 
-from bot.api_helpers.lessons.api_lesson_requests import upload_file_in_lesson_request, \
-    upload_homework_in_lesson_request, upload_solution_in_lesson_request, \
-    upload_comments_in_lesson_request, add_lesson_request
-from bot.api_helpers.teachers.api_teacher_requests import get_teacher_request, \
-    upload_personal_file_request
+from bot.api_helpers.lessons.api_lesson_requests import add_lesson_request
+from bot.api_helpers.teachers.api_teacher_requests import get_teacher_request
 from bot.contexts import UploadFile, AddLesson
 from bot.functions.lessons.lesson_funcs import upload_file_on_server, save_file_in_db, \
     show_lesson_for_teacher_details
 from bot.functions.teachers.teacher_funcs import show_teacher_menu, show_personal_files
 from bot.keyboards.teacher_keyboards import students_kb
 from bot.routers import teacher_router
+from bot.storage import STUDENTS
 
 
 @teacher_router.message(F.text, AddLesson.lesson_name)
@@ -45,7 +41,10 @@ async def handle_teacher_message(message: Message, state: FSMContext):
         await show_personal_files(message)
 
 
-@teacher_router.message(lambda message: message.document or message.photo, UploadFile.file)
+@teacher_router.message(
+    lambda message: message.document or message.photo and message.from_user.id not in STUDENTS,
+    UploadFile.file,
+)
 async def handle_upload_file(message: Message, state: FSMContext):
     await upload_file_on_server(message, state)
     saved_file = await save_file_in_db(state)

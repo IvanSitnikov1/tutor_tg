@@ -11,6 +11,7 @@ from bot.functions.lessons.lesson_funcs import show_lesson_for_teacher_details, 
 from bot.keyboards.teacher_keyboards import delete_personal_files_by_ids_kb, lessons_of_student_kb, \
     toggle_lesson_is_done_kb, delete_files_kb
 from bot.routers import teacher_router
+from bot.storage import STUDENTS
 
 
 @teacher_router.callback_query(lambda c: c.data.startswith('show_lessons_of_student:'))
@@ -23,7 +24,9 @@ async def show_lessons_of_student(call: CallbackQuery):
     )
 
 
-@teacher_router.callback_query(lambda c: c.data.startswith('show_lesson:'))
+@teacher_router.callback_query(
+    lambda c: c.data.startswith('show_lesson:') and c.from_user.id not in STUDENTS,
+)
 async def show_lesson(call: CallbackQuery):
     lesson_id = call.data.split(':')[1]
     await show_lesson_for_teacher_details(call.message, lesson_id)

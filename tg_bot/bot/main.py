@@ -6,7 +6,7 @@ from aiogram.fsm.storage.memory import MemoryStorage
 from bot.api_helpers.students.api_student_requests import get_students_list_ids_request
 from bot.storage import STUDENTS
 from config import TELEGRAM_TOKEN
-from bot.handlers import auth_router, teacher_router
+from bot.handlers import auth_router, teacher_router, student_router
 
 
 logging.basicConfig(level=logging.INFO)
@@ -26,6 +26,6 @@ async def update_students():
 async def start_bot():
     await update_students()
     dp.include_router(auth_router)
-    # dp.include_router(student_router)
+    dp.include_router(student_router)
     dp.include_router(teacher_router)
     await dp.start_polling(bot)
