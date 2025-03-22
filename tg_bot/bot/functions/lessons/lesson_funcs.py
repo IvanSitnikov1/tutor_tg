@@ -17,19 +17,29 @@ from config import STATIC_URL
 async def upload_file_on_server(message: Message, state: FSMContext):
     file = None
     file_name = None
+
     if message.document:
         file = message.document
         file_name = file.file_name
-    if message.photo:
+    elif message.photo:
         file = message.photo[-1]
         file_name = f'{file.file_id}.jpg'
+    elif message.video:
+        file = message.video
+        file_name = f'{file.file_id}.mp4'
+    elif message.audio:
+        file = message.audio
+        file_name = f'{file.file_id}.mp3'
+
+    if not file:
+        await message.answer("Файл не найден или формат не поддерживается.")
+        return
 
     await state.update_data(file_name=file_name)
     state_data = await state.get_data()
-    file_path = os.path.join(
-        f'/home/ivan/Projects/tutor_tg/static/{state_data.get('file_type')}',
-        file_name,
-    )
+
+    file_type = state_data.get('file_type')
+    file_path = os.path.join(f'/home/ivan/Projects/tutor_tg/static/{file_type}', file_name)
 
     file_info = await message.bot.get_file(file.file_id)
     await message.bot.download_file(file_info.file_path, file_path)
@@ -58,105 +68,158 @@ async def pre_upload_file(call: CallbackQuery, state: FSMContext, file_type: str
     await state.set_state(UploadFile.file)
 
 
+async def show_files_by_type(files, file_type):
+    media = []
+    text = ''
+    if file_type == 'files':
+        text = '<b>Материалы</b>\n'
+    elif file_type == 'homeworks':
+        text = '<b>Домашние задания</b>\n'
+    elif file_type == 'completed_homeworks':
+        text = '<b>Выполненные задания</b>\n'
+    elif file_type == 'comments_to_completed_homeworks':
+        text = '<b>Комментарии учителя</b>\n'
+
+    for file in files:
+        file_path = file.get('file_path')
+        file_url = (f"<a href='{STATIC_URL}{file_path}'>"
+                    f"{file_path.split('/')[-1]}</a>")
+        if file_path.endswith(('.png', '.jpg', '.jpeg', '.gif', '.webp',
+                               '.mp4', '.mov', '.avi', '.mkv', '.webm',
+                               '.mp3', '.wav', '.ogg', '.flac', '.aac')):
+            file_fs = FSInputFile(f'/home/ivan/Projects/tutor_tg/static{file_path}')
+            media.append(file_fs)
+        else:
+            text += f"{file_url}\n--------\n"
+
+    return media, text
+
+
+async def send_media(message, file, reply_markup=None):
+    if file.path.endswith(('.png', '.jpg', '.jpeg', '.gif', '.webp')):
+        await message.answer_photo(photo=file, reply_markup=reply_markup)
+    elif file.path.endswith(('.mp4', '.mov', '.avi', '.mkv', '.webm')):
+        await message.answer_video(video=file, reply_markup=reply_markup)
+    elif file.path.endswith(('.mp3', '.wav', '.ogg', '.flac', '.aac')):
+        await message.answer_audio(audio=file, reply_markup=reply_markup)
+
+
 async def show_lesson_for_student_details(message, lesson_id):
     lesson = await get_lesson_request(lesson_id)
 
-    material_files_image = []
-    materials_text = "<b>Материалы</b>\n"
-    for material in lesson.get('data', {}).get('files'):
-        file_url = (f"<a href='{STATIC_URL}{material.get('file_path')}'>"
-                    f"{material.get('file_path').split('/')[-1]}</a>")
+    material_files_media, materials_text = await show_files_by_type(
+        lesson.get('data', {}).get('files'),
+        'files',
+    )
 
-        # Проверяем, картинка ли это
-        if material.get('file_path').endswith(('.png', '.jpg', '.jpeg', '.gif', '.webp')):
-            file = FSInputFile(f'/home/ivan/Projects/tutor_tg/static{material.get('file_path')}')
-            material_files_image.append(file)
-        else:
-            materials_text += f"{file_url}\n--------\n"
+    homework_media, homeworks_text = await show_files_by_type(
+        lesson.get('data', {}).get('homeworks'),
+        'homeworks',
+    )
 
-    homeworks = ''
-    for homework in lesson.get('data', {}).get('homeworks'):
-        homeworks += (f"<a href='{STATIC_URL}{homework.get('file_path')}"
-                      f"'>{homework.get('file_path').split('/')[-1]}</a>\n--------\n")
-    homework_text = f'<b>Домашние задания</b>\n{homeworks}'
+    completed_homework_media, completed_homeworks_text = await show_files_by_type(
+        lesson.get('data', {}).get('completed_homeworks'),
+        'completed_homeworks',
+    )
 
-    completed_homeworks = ''
-    for completed_homework in lesson.get('data', {}).get('completed_homeworks'):
-        completed_homeworks += (
-            f"<a href='{STATIC_URL}{completed_homework.get('file_path')}"
-            f"'>{completed_homework.get('file_path').split('/')[-1]}</a>\n--------\n"
-        )
-    completed_homeworks_text = f'<b>Выполненные задания</b>\n{completed_homeworks}'
-
-    comments_to_completed_homeworks = ''
-    for comment_to_completed_homework in lesson.get('data', {}).get('comments_to_completed_homeworks'):
-        comments_to_completed_homeworks += (
-            f"<a href='{STATIC_URL}{comment_to_completed_homework.get('file_path')}'>"
-            f"{comment_to_completed_homework.get('file_path').split('/')[-1]}</a>\n--------\n"
-        )
-    completed_homeworks_text += f'<b>Комментарии учителя</b>\n{comments_to_completed_homeworks}'
+    comments_to_completed_homework_media, comments_to_completed_homeworks_text = await show_files_by_type(
+        lesson.get('data', {}).get('comments_to_completed_homeworks'),
+        'comments_to_completed_homeworks',
+    )
 
     await message.answer(materials_text, parse_mode='HTML')
-    if material_files_image:
-        for file in material_files_image[:-1]:
-            await message.answer_photo(photo=file)
-        await message.answer_photo(photo=material_files_image[-1])
-    await message.answer(homework_text, parse_mode='HTML')
-    await message.answer(completed_homeworks_text, reply_markup=add_solution_kb(lesson_id), parse_mode='HTML')
+    if material_files_media:
+        for file in material_files_media[:-1]:
+            await send_media(message, file)
+        await send_media(message, material_files_media[-1])
+
+    await message.answer(homeworks_text, parse_mode='HTML')
+    if homework_media:
+        for file in homework_media[:-1]:
+            await send_media(message, file)
+        await send_media(message, homework_media[-1])
+
+    await message.answer(completed_homeworks_text, parse_mode='HTML')
+    if completed_homework_media:
+        for file in completed_homework_media[:-1]:
+            await send_media(message, file)
+        await send_media(message, completed_homework_media[-1])
+
+    await message.answer(comments_to_completed_homeworks_text, parse_mode='HTML')
+    if comments_to_completed_homework_media:
+        for file in comments_to_completed_homework_media[:-1]:
+            await send_media(message, file)
+        await send_media(
+            message,
+            comments_to_completed_homework_media[-1],
+            reply_markup=add_solution_kb(lesson_id),
+        )
 
 
 async def show_lesson_for_teacher_details(message, lesson_id):
     lesson = await get_lesson_request(lesson_id)
     await message.answer("📒", reply_markup=toggle_lesson_is_done_kb(lesson.get('data', {})))
 
-    material_files_image = []
-    materials_text = "<b>Материалы</b>\n"
-    for material in lesson.get('data', {}).get('files'):
-        file_url = f"<a href='{STATIC_URL}{material.get('file_path')}'>{material.get('file_path').split('/')[-1]}</a>"
+    material_files_media, materials_text = await show_files_by_type(
+        lesson.get('data', {}).get('files'),
+        'files',
+    )
 
-        # Проверяем, картинка ли это
-        if material.get('file_path').endswith(('.png', '.jpg', '.jpeg', '.gif', '.webp')):
-            file = FSInputFile(f'/home/ivan/Projects/tutor_tg/static{material.get('file_path')}')
-            material_files_image.append(file)
-        else:
-            materials_text += f"{file_url}\n--------\n"
+    homework_media, homeworks_text = await show_files_by_type(
+        lesson.get('data', {}).get('homeworks'),
+        'homeworks',
+    )
 
-    homeworks = ''
-    for homework in lesson.get('data', {}).get('homeworks'):
-        homeworks += (f"<a href='{STATIC_URL}{homework.get('file_path')}"
-                      f"'>{homework.get('file_path').split('/')[-1]}</a>\n--------\n")
-    homework_text = f'<b>Домашние задания</b>\n{homeworks}'
+    completed_homework_media, completed_homeworks_text = await show_files_by_type(
+        lesson.get('data', {}).get('completed_homeworks'),
+        'completed_homeworks',
+    )
 
-    completed_homeworks = ''
-    for completed_homework in lesson.get('data', {}).get('completed_homeworks'):
-        completed_homeworks += (
-            f"<a href='{STATIC_URL}{completed_homework.get('file_path')}"
-            f"'>{completed_homework.get('file_path').split('/')[-1]}</a>\n--------\n"
-        )
-    completed_homeworks_text = f'<b>Выполненные задания</b>\n{completed_homeworks}'
+    comments_to_completed_homework_media, comments_to_completed_homeworks_text = await show_files_by_type(
+        lesson.get('data', {}).get('comments_to_completed_homeworks'),
+        'comments_to_completed_homeworks',
+    )
 
-    comments_to_completed_homeworks = ''
-    for comment_to_completed_homework in lesson.get('data', {}).get('comments_to_completed_homeworks'):
-        comments_to_completed_homeworks += (
-            f"<a href='{STATIC_URL}{comment_to_completed_homework.get('file_path')}'>"
-            f"{comment_to_completed_homework.get('file_path').split('/')[-1]}</a>\n--------\n"
-        )
-    completed_homeworks_text += f'<b>Комментарии учителя</b>\n{comments_to_completed_homeworks}'
-
-    if material_files_image:
+    if material_files_media:
         await message.answer(materials_text, parse_mode='HTML')
-        for file in material_files_image[:-1]:
-            await message.answer_photo(photo=file)
-        await message.answer_photo(
-            photo=material_files_image[-1], reply_markup=lesson_files_kb(lesson_id, 'files')
+        for file in material_files_media[:-1]:
+            await send_media(message, file)
+        await send_media(
+            message, material_files_media[-1], reply_markup=lesson_files_kb(lesson_id, 'files')
         )
     else:
         await message.answer(
             materials_text, reply_markup=lesson_files_kb(lesson_id, 'files'), parse_mode='HTML'
         )
-    await message.answer(
-        homework_text, reply_markup=lesson_homework_kb(lesson_id, 'homeworks'), parse_mode='HTML'
-    )
-    await message.answer(
-        completed_homeworks_text, reply_markup=add_comment_kb(lesson_id), parse_mode='HTML'
-    )
+
+    if homework_media:
+        await message.answer(homeworks_text, parse_mode='HTML')
+        for file in homework_media[:-1]:
+            await send_media(message, file)
+        await send_media(
+            message, homework_media[-1], reply_markup=lesson_homework_kb(lesson_id, 'homeworks')
+        )
+    else:
+        await message.answer(
+            homeworks_text, reply_markup=lesson_homework_kb(lesson_id, 'homeworks'), parse_mode='HTML'
+        )
+
+    await message.answer(completed_homeworks_text, parse_mode='HTML')
+    if completed_homework_media:
+        for file in completed_homework_media[:-1]:
+            await send_media(message, file)
+        await send_media(message, completed_homework_media[-1])
+
+    if comments_to_completed_homework_media:
+        await message.answer(comments_to_completed_homeworks_text, parse_mode='HTML')
+        for file in comments_to_completed_homework_media[:-1]:
+            await send_media(message, file)
+        await send_media(
+            message,
+            comments_to_completed_homework_media[-1],
+            reply_markup=add_comment_kb(lesson_id),
+        )
+    else:
+        await message.answer(
+            comments_to_completed_homeworks_text, reply_markup=add_comment_kb(lesson_id), parse_mode='HTML'
+        )

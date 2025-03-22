@@ -27,7 +27,8 @@ async def handle_student_message(message: Message):
 
 
 @student_router.message(
-    lambda message: (message.document or message.photo) and message.from_user.id in STUDENTS,
+    lambda message: (message.document or message.photo or message.video or message.audio)
+                    and message.from_user.id in STUDENTS,
     UploadFile.file,
 )
 async def handle_upload_file(message: Message, state: FSMContext):
