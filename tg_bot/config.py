@@ -7,4 +7,5 @@ load_dotenv(dotenv_path)
 
 TELEGRAM_TOKEN = os.environ.get('TELEGRAM_TOKEN')
 API_URL = os.environ.get('API_URL')
-STATIC_URL = 'http://127.0.0.1:8000/static'
+STATIC_URL = os.environ.get('STATIC_URL')
+STATIC_PATH = os.environ.get('STATIC_PATH')

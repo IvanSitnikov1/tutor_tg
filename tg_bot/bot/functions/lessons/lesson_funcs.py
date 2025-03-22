@@ -1,4 +1,6 @@
 import os
+import random
+import string
 
 from aiogram.fsm.context import FSMContext
 from aiogram.types import Message, FSInputFile, CallbackQuery
@@ -11,25 +13,31 @@ from bot.contexts import UploadFile
 from bot.keyboards.student_keyboards import add_solution_kb
 from bot.keyboards.teacher_keyboards import toggle_lesson_is_done_kb, lesson_files_kb, \
     lesson_homework_kb, add_comment_kb
-from config import STATIC_URL
+from config import STATIC_URL, STATIC_PATH
+
+
+def generate_random_string(length=4):
+    return ''.join(random.choices(string.ascii_letters + string.digits, k=length))
 
 
 async def upload_file_on_server(message: Message, state: FSMContext):
     file = None
     file_name = None
 
+    random_str = generate_random_string()
+
     if message.document:
         file = message.document
-        file_name = file.file_name
+        file_name = f"{file.file_name}_{random_str}"
     elif message.photo:
         file = message.photo[-1]
-        file_name = f'{file.file_id}.jpg'
+        file_name = f"{file.file_id}_{random_str}.jpg"
     elif message.video:
         file = message.video
-        file_name = f'{file.file_id}.mp4'
+        file_name = f"{file.file_id}_{random_str}.mp4"
     elif message.audio:
         file = message.audio
-        file_name = f'{file.file_id}.mp3'
+        file_name = f"{file.file_id}_{random_str}.mp3"
 
     if not file:
         await message.answer("Файл не найден или формат не поддерживается.")
@@ -39,7 +47,7 @@ async def upload_file_on_server(message: Message, state: FSMContext):
     state_data = await state.get_data()
 
     file_type = state_data.get('file_type')
-    file_path = os.path.join(f'/home/ivan/Projects/tutor_tg/static/{file_type}', file_name)
+    file_path = os.path.join(f'{STATIC_PATH}{file_type}', file_name)
 
     file_info = await message.bot.get_file(file.file_id)
     await message.bot.download_file(file_info.file_path, file_path)

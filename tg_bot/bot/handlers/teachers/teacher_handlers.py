@@ -38,11 +38,9 @@ async def handle_lesson_name_message(message: Message, state: FSMContext):
     await show_lesson_for_teacher_details(message, new_lesson.get('data', {}).get('id'))
 
 
-@teacher_router.message(F.text.in_({'Меню', '👤Ученики', '📝Личные файлы'}))
+@teacher_router.message(F.text.in_({'👤Ученики', '📝Личные файлы'}))
 async def handle_teacher_message(message: Message, state: FSMContext):
-    if message.text == 'Меню':
-        await show_teacher_menu(message)
-    elif message.text == '👤Ученики':
+    if message.text == '👤Ученики':
         current_user = await get_teacher_request(message.from_user.id)
         await message.answer(
             'Ваши студенты:',

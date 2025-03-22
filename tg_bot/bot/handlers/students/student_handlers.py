@@ -3,6 +3,7 @@ from aiogram.fsm.context import FSMContext
 from aiogram.types import Message
 from aiogram.filters import Command
 
+from bot.api_helpers.teachers.api_teacher_requests import get_teacher_request
 from bot.contexts import UploadFile
 from bot.functions.lessons.lesson_funcs import upload_file_on_server, save_file_in_db, \
     show_lesson_for_student_details
@@ -15,13 +16,11 @@ from bot.storage import STUDENTS
 
 
 @student_router.message(
-    F.text.in_({'Меню', '📒Уроки'}),
+    F.text.in_({'📒Уроки'}),
     lambda message: message.from_user.id in STUDENTS,
 )
 async def handle_student_message(message: Message):
-    if message.text == 'Меню':
-        await show_student_menu(message)
-    elif message.text == '📒Уроки':
+    if message.text == '📒Уроки':
         student = await get_student_request(message.from_user.id)
         await message.answer('Уроки', reply_markup=show_lessons_of_student_kb(student.get('data', {}).get('lessons')))
 
@@ -44,7 +43,10 @@ async def handle_upload_file(message: Message, state: FSMContext):
 
 @student_router.message()
 async def handle_unknown(message: Message):
-    # проверка есть ли пользователь
-    await message.answer("Извините, я не понимаю ваше сообщение. Попробуйте открыть "
-                         "меню(/menu).")
-    await message.answer('Для использования бота нужно зарегистрироваться(/start).')
+    student = await get_student_request(message.from_user.id)
+    teacher = await get_teacher_request(message.from_user.id)
+    if student.get('data', None) or teacher.get('data', None):
+        await message.answer("Извините, я не понимаю ваше сообщение. Попробуйте открыть "
+                             "меню(/menu).")
+    else:
+        await message.answer('Для использования бота нужно зарегистрироваться(/start).')
