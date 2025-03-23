@@ -31,7 +31,7 @@ async def show_personal_files(message: Message):
         if personal_file.get('file_path').endswith(('.png', '.jpg', '.jpeg', '.gif', '.webp',
                                                    '.mp4', '.mov', '.avi', '.mkv', '.webm',
                                                    '.mp3', '.wav', '.ogg', '.flac', '.aac')):
-            file_fs = FSInputFile(f'/home/ivan/Projects/tutor_tg/static{personal_file.get('file_path')}')
+            file_fs = FSInputFile(f'/home/ivan/Projects/tutor_tg/static{personal_file.get("file_path")}')
             material_files_media.append(file_fs)
         else:
             files_text += f"{file_url}\n--------\n"

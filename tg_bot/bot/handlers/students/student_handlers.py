@@ -1,13 +1,11 @@
 from aiogram import F
 from aiogram.fsm.context import FSMContext
 from aiogram.types import Message
-from aiogram.filters import Command
 
 from bot.api_helpers.teachers.api_teacher_requests import get_teacher_request
 from bot.contexts import UploadFile
 from bot.functions.lessons.lesson_funcs import upload_file_on_server, save_file_in_db, \
     show_lesson_for_student_details
-from bot.functions.students.student_funcs import show_student_menu
 
 from bot.api_helpers.students.api_student_requests import get_student_request
 from bot.keyboards.student_keyboards import show_lessons_of_student_kb
