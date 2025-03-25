@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from aiogram import F
 from aiogram.filters import Command
 from aiogram.fsm.context import FSMContext
@@ -6,6 +8,7 @@ from aiogram.types import Message
 from bot.api_helpers.students.api_student_requests import create_student_request
 from bot.functions.students.student_funcs import show_student_menu
 from bot.keyboards.auth_keyboards import user_type_kb
+from bot.keyboards.teacher_keyboards import generate_calendar
 from bot.routers import auth_router
 from bot.contexts import Form, EditLessonDate
 from bot.storage import update_students
@@ -18,12 +21,12 @@ async def cmd_start(message: Message, state: FSMContext):
         params = args[1]
         parts = params.split('_')
         if params.startswith('edit_date'):
-            await message.answer('Выбери дату проведения урока')
-
-
-
             await state.update_data(lesson_id=parts[2])
-            await state.set_state(EditLessonDate.new_date)
+            now = datetime.now()
+            await message.answer(
+                '📅 Выбери дату проведения урока:',
+                reply_markup=generate_calendar(now.year, now.month),
+            )
     else:
         await state.clear()
         await message.answer('Привет! Как тебя зовут?')

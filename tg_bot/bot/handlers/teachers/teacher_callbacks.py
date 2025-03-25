@@ -3,7 +3,7 @@ from aiogram.types import CallbackQuery
 
 from bot.api_helpers.lessons.api_lesson_requests import toggle_lesson_is_done_request, \
     get_lesson_request, delete_lesson_request, delete_files_in_lesson_request, \
-    delete_homeworks_in_lesson_request, delete_all_files_requests
+    delete_homeworks_in_lesson_request, delete_all_files_requests, update_lesson_date_requests
 from bot.api_helpers.students.api_student_requests import get_student_request, \
     delete_student_request
 from bot.api_helpers.teachers.api_teacher_requests import get_teacher_request, delete_personal_files_request
@@ -11,7 +11,7 @@ from bot.contexts import AddLesson, UploadFile
 from bot.functions.lessons.lesson_funcs import show_lesson_for_teacher_details, pre_upload_file
 from bot.functions.teachers.teacher_funcs import show_personal_files
 from bot.keyboards.teacher_keyboards import delete_personal_files_by_ids_kb, lessons_of_student_kb, \
-    toggle_lesson_is_done_kb, delete_files_kb, students_kb
+    toggle_lesson_is_done_kb, delete_files_kb, students_kb, generate_calendar
 from bot.routers import teacher_router
 from bot.storage import STUDENTS
 
@@ -233,3 +233,27 @@ async def delete_student(call: CallbackQuery):
         'Ваши студенты:',
         reply_markup=students_kb(current_user.get('data', {}).get('students', [])),
     )
+
+
+@teacher_router.callback_query(lambda c: c.data.startswith("select_date_"))
+async def process_date_selection(call: CallbackQuery, state: FSMContext):
+    new_date = call.data.split("_")[2]  # Дата в формате "дд-мм-гггг"
+
+    state = await state.get_data()
+    lesson_id = int(state.get('lesson_id'))
+    response = await update_lesson_date_requests(lesson_id, new_date)
+    await call.message.answer(f"✅ Вы выбрали дату: {new_date}")
+    await call.message.answer(response.get('detail'))
+    await call.answer()
+
+
+@teacher_router.callback_query(lambda c: c.data.startswith("change_month_"))
+async def process_change_month(callback: CallbackQuery):
+    _, _, year, month = callback.data.split("_")
+    year, month = int(year), int(month)
+
+    await callback.message.edit_text(
+        "📅 Выбери дату проведения урока:",
+        reply_markup=generate_calendar(year, month)
+    )
+    await callback.answer()

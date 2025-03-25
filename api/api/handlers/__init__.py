@@ -16,6 +16,7 @@ from .lessons.get_lesson_for_id import lesson_router
 from .lessons.add_lesson import lesson_router
 from .lessons.delete_lesson import lesson_router
 from .lessons.delete_all_files_by_type import lesson_router
+from .lessons.update_lesson_date import lesson_router
 
 from .teachers.add_user_teacher import teacher_router
 from .teachers.add_personal_file import teacher_router

@@ -1,5 +1,9 @@
+import calendar
+from datetime import datetime, timedelta
+
 from aiogram.types import KeyboardButton, ReplyKeyboardMarkup, InlineKeyboardButton, \
     InlineKeyboardMarkup
+from aiogram.utils.keyboard import InlineKeyboardBuilder
 
 
 def teacher_menu_kb():
@@ -133,3 +137,42 @@ def add_comment_kb(lesson_id):
     kb_list = [[InlineKeyboardButton(text='Add comment', callback_data=f'add_lesson_comment:{lesson_id}')]]
     keyboard = InlineKeyboardMarkup(inline_keyboard=kb_list)
     return keyboard
+
+
+def generate_calendar(year: int, month: int) -> InlineKeyboardMarkup:
+    keyboard = []
+
+    # 📌 Получаем название месяца
+    month_name = calendar.month_name[month]
+    # Добавляем кнопку с названием месяца в верхнюю часть
+    keyboard.append([InlineKeyboardButton(text=f"📅 {month_name} {year}", callback_data="ignore")])
+
+    # 📌 Дни недели
+    days = ["Пн", "Вт", "Ср", "Чт", "Пт", "Сб", "Вс"]
+    keyboard.append([InlineKeyboardButton(text=day, callback_data="ignore") for day in days])
+
+    # 📌 Генерация дат
+    month_calendar = calendar.monthcalendar(year, month)
+    for week in month_calendar:
+        row = []
+        for day in week:
+            if day == 0:
+                row.append(InlineKeyboardButton(text=" ", callback_data="ignore"))  # Пустые клетки
+            else:
+                date_str = f"{day:02d}-{month:02d}-{year}"
+                row.append(InlineKeyboardButton(text=str(day), callback_data=f"select_date_{date_str}"))
+        keyboard.append(row)
+
+    # 📌 Кнопки переключения месяца (внизу)
+    prev_month = (datetime(year, month, 1) - timedelta(days=1)).month
+    prev_year = (datetime(year, month, 1) - timedelta(days=1)).year
+
+    next_month = (datetime(year, month, 28) + timedelta(days=4)).month
+    next_year = (datetime(year, month, 28) + timedelta(days=4)).year
+
+    keyboard.append([
+        InlineKeyboardButton(text="⬅️ Назад", callback_data=f"change_month_{prev_year}_{prev_month}"),
+        InlineKeyboardButton(text="➡️ Вперёд", callback_data=f"change_month_{next_year}_{next_month}")
+    ])
+
+    return InlineKeyboardMarkup(inline_keyboard=keyboard)
