@@ -32,7 +32,7 @@ async def handle_upload_file(message: Message, state: FSMContext):
     await upload_file_on_server(message, state)
     saved_file = await save_file_in_db(state)
 
-    await message.answer(f'{saved_file.get('detail')}')
+    await message.answer(f"{saved_file.get('detail')}")
     state_data = await state.get_data()
     await show_lesson_for_student_details(message, state_data.get('lesson_id'))
 

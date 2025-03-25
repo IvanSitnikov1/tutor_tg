@@ -89,3 +89,9 @@ async def delete_homeworks_in_lesson_request(homeworks_ids):
 async def delete_all_files_requests(lesson_id, file_type):
     url = f'{API_URL}/lessons/{lesson_id}/{file_type}'
     return url, 'DELETE', None
+
+
+@request_decorator
+async def update_lesson_date_requests(lesson_id, new_date):
+    url = f'{API_URL}/lessons/{lesson_id}?new_date={new_date}'
+    return url, 'PUT', None

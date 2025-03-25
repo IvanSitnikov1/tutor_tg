@@ -21,7 +21,7 @@ async def show_lessons_of_student(call: CallbackQuery):
     student_id = int(call.data.split(':')[1])
     student = await get_student_request(student_id)
     await call.message.answer(
-        f'{student.get('data', {}).get('username')}:',
+        f"{student.get('data', {}).get('username')}:",
         reply_markup=lessons_of_student_kb(student.get('data', {})),
     )
 
@@ -57,7 +57,7 @@ async def delete_lesson(call: CallbackQuery):
 
     # Редактируем текущее сообщение, обновляя список уроков
     await call.message.edit_text(
-        text=f'{student.get('username')}:',
+        text=f"{student.get('username')}:",
         reply_markup=lessons_of_student_kb(student.get('data', {}))
     )
 

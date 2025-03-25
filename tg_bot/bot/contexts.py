@@ -12,6 +12,11 @@ class AddLesson(StatesGroup):
     lesson_name = State()
 
 
+class EditLessonDate(StatesGroup):
+    lesson_id = State()
+    new_date = State()
+
+
 class UploadFile(StatesGroup):
     author_id = State()
     lesson_id = State()

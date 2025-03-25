@@ -166,7 +166,13 @@ async def show_lesson_for_student_details(message, lesson_id):
 
 async def show_lesson_for_teacher_details(message, lesson_id):
     lesson = await get_lesson_request(lesson_id)
-    await message.answer("📒", reply_markup=toggle_lesson_is_done_kb(lesson.get('data', {})))
+    date = lesson.get('data', {}).get('date')
+    year, month, day = date.split('-')
+    await message.answer(
+        f"📒 \\|{day}\\-{month}\\-{year}\\| [Edit](https://t.me/EbooebobotBot?start=edit_date_{lesson_id})",
+        reply_markup=toggle_lesson_is_done_kb(lesson.get('data', {})),
+        parse_mode="MarkdownV2",
+    )
 
     material_files_media, materials_text = await show_files_by_type(
         lesson.get('data', {}).get('files'),

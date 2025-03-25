@@ -4,7 +4,8 @@ from aiogram.types import KeyboardButton, ReplyKeyboardMarkup, InlineKeyboardBut
 
 def teacher_menu_kb():
     kb_list = [
-        [KeyboardButton(text='👤Ученики')], [KeyboardButton(text='📝Личные файлы')]
+        [KeyboardButton(text='👤Ученики'), KeyboardButton(text='📩 Пригласить ученика')],
+        [KeyboardButton(text='📝Личные файлы')],
     ]
     keyboard = ReplyKeyboardMarkup(
         keyboard=kb_list,
