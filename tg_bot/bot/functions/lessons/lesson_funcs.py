@@ -13,7 +13,7 @@ from bot.contexts import UploadFile
 from bot.keyboards.student_keyboards import add_solution_kb
 from bot.keyboards.teacher_keyboards import toggle_lesson_is_done_kb, lesson_files_kb, \
     lesson_homework_kb, add_comment_kb
-from config import STATIC_URL, STATIC_PATH
+from config import STATIC_URL, STATIC_PATH, BOT_NAME
 
 
 def generate_random_string(length=4):
@@ -28,7 +28,7 @@ async def upload_file_on_server(message: Message, state: FSMContext):
 
     if message.document:
         file = message.document
-        file_name = f"{file.file_name}_{random_str}"
+        file_name = f"{random_str}_{file.file_name}"
     elif message.photo:
         file = message.photo[-1]
         file_name = f"{file.file_id}_{random_str}.jpg"
@@ -95,7 +95,7 @@ async def show_files_by_type(files, file_type):
         if file_path.endswith(('.png', '.jpg', '.jpeg', '.gif', '.webp',
                                '.mp4', '.mov', '.avi', '.mkv', '.webm',
                                '.mp3', '.wav', '.ogg', '.flac', '.aac')):
-            file_fs = FSInputFile(f'/home/ivan/Projects/tutor_tg/static{file_path}')
+            file_fs = FSInputFile(f'{STATIC_PATH}{file_path}')
             media.append(file_fs)
         else:
             text += f"{file_url}\n--------\n"
@@ -153,14 +153,18 @@ async def show_lesson_for_student_details(message, lesson_id):
             await send_media(message, file)
         await send_media(message, completed_homework_media[-1])
 
-    await message.answer(comments_to_completed_homeworks_text, parse_mode='HTML')
     if comments_to_completed_homework_media:
+        await message.answer(comments_to_completed_homeworks_text, parse_mode='HTML')
         for file in comments_to_completed_homework_media[:-1]:
             await send_media(message, file)
         await send_media(
             message,
             comments_to_completed_homework_media[-1],
             reply_markup=add_solution_kb(lesson_id),
+        )
+    else:
+        await message.answer(
+            comments_to_completed_homeworks_text, reply_markup=add_solution_kb(lesson_id), parse_mode='HTML'
         )
 
 
@@ -169,7 +173,7 @@ async def show_lesson_for_teacher_details(message, lesson_id):
     date = lesson.get('data', {}).get('date')
     year, month, day = date.split('-')
     await message.answer(
-        f"📒 \\|{day}\\-{month}\\-{year}\\| [Edit](https://t.me/EbooebobotBot?start=edit_date_{lesson_id})",
+        f"📒 \\|{day}\\-{month}\\-{year}\\| [Edit](https://t.me/{BOT_NAME}?start=edit_date_{lesson_id})",
         reply_markup=toggle_lesson_is_done_kb(lesson.get('data', {})),
         parse_mode="MarkdownV2",
     )

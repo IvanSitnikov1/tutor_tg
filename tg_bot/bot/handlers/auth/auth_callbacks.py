@@ -16,6 +16,8 @@ async def set_teacher(call: CallbackQuery, state: FSMContext):
     await call.message.answer(new_user.get('detail'))
     if new_user.get('data'):
         await show_teacher_menu(call.message)
+    else:
+        await call.message.answer('Не удалось зарегистрироваться, попробуйте снова:')
     await state.clear()
 
 

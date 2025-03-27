@@ -45,7 +45,7 @@ async def handle_set_teacher_for_student(message: Message, state: FSMContext):
     try:
         await state.update_data(teacher_id=int(message.text))
     except ValueError:
-        await message.answer('Введите корректный код:')
+        await message.answer('Введите корректный числовой код:')
         return
 
     data = await state.get_data()
@@ -58,6 +58,6 @@ async def handle_set_teacher_for_student(message: Message, state: FSMContext):
     if new_user.get('data'):
         await update_students()
         await show_student_menu(message)
-        await state.clear()
     else:
-        await message.answer('Попробуйте ввести код еще раз:')
+        await message.answer('Не удалось зарегистрироваться, попробуйте снова:')
+    await state.clear()
