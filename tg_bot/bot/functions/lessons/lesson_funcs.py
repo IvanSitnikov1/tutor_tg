@@ -4,6 +4,7 @@ import string
 
 from aiogram.fsm.context import FSMContext
 from aiogram.types import Message, FSInputFile, CallbackQuery
+import aiohttp
 
 from bot.api_helpers.lessons.api_lesson_requests import upload_file_in_lesson_request, \
     upload_homework_in_lesson_request, upload_solution_in_lesson_request, \
@@ -40,8 +41,10 @@ async def upload_file_on_server(message: Message, state: FSMContext):
         file_name = f"{file.file_id}_{random_str}.mp3"
 
     if not file:
-        await message.answer("Файл не найден или формат не поддерживается.")
-        return
+        return 'UNKNOWN_FORMAT'
+
+    if file.file_size > 20 * 1024 * 1024:
+        return 'BIG_SIZE'
 
     await state.update_data(file_name=file_name)
     state_data = await state.get_data()

@@ -60,7 +60,14 @@ async def handle_teacher_message(message: Message):
     UploadFile.file,
 )
 async def handle_upload_file(message: Message, state: FSMContext):
-    await upload_file_on_server(message, state)
+    is_upload = await upload_file_on_server(message, state)
+    if is_upload == 'UNKNOWN_FORMAT':
+        await message.answer("Формат не поддерживается. Попробуйте снова.")
+        return
+    elif is_upload == 'BIG_SIZE':
+        await message.answer("Файл слишком большой. Максимальный размер - 20 МБ. Попробуйте снова.")
+        return
+
     saved_file = await save_file_in_db(state)
 
     await message.answer(f"{saved_file.get('detail')}")
