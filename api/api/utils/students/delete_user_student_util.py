@@ -9,10 +9,12 @@ from fastapi import HTTPException
 from api.configs.app import settings
 from api.configs.database import connection
 from api.models import Student, Lesson, User
+from api.configs.loggers import logger
 
 
 @connection
 async def delete_user_student_util(student_id: int, session: AsyncSession):
+    logger.info('Получен запрос на удаление пользователя студента')
     query = select(Student).where(Student.id == student_id).options(
         selectinload(Student.lessons).options(
             selectinload(Lesson.files),
@@ -24,8 +26,17 @@ async def delete_user_student_util(student_id: int, session: AsyncSession):
 
     result = await session.execute(query)
     student = result.scalar_one_or_none()
+    if not student:
+        logger.error('Студент не найден')
+        raise HTTPException(status_code=404, detail='Студент не найден')
 
-    if student:
+    logger.info('Удаление пользователя ученика из базы данных...')
+    stmt = delete(User).where(User.id == student_id)
+    result = await session.execute(stmt)
+    await session.commit()
+
+    if result.rowcount:
+        logger.info('Удаление файлов с сервера...')
         for lesson in student.lessons:
             for file_list in [
                 lesson.files,
@@ -38,18 +49,10 @@ async def delete_user_student_util(student_id: int, session: AsyncSession):
                     if os.path.exists(file_path):
                         os.remove(file_path)
 
-        stmt = delete(User).where(User.id == student_id)
-        await session.execute(stmt)
-
-        try:
-            await session.commit()
-        except SQLAlchemyError:
-            raise HTTPException(status_code=400, detail="Ошибка при удалении ученика")
-
+        logger.info('Ученик удален успешно')
         return {
-            'detail': 'Ученик удален успешно'
+            'detail': 'Ученик удален успешно',
         }
     else:
-        return {
-            'detail': 'Запрашиваемого пользователя не существует',
-        }
+        logger.error('Не удалось удалить пользователя студента')
+        raise HTTPException(status_code=400, detail='Не удалось удалить пользователя студента')

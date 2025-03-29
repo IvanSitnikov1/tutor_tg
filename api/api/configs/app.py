@@ -3,14 +3,14 @@ from contextlib import asynccontextmanager
 from pydantic_settings import BaseSettings
 from fastapi.staticfiles import StaticFiles
 
-from api.configs.loggers import system_logger
+from api.configs.loggers import logger
 
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    system_logger.info('Сервер запущен.')
+    logger.info('Сервер запущен.')
     yield
-    system_logger.info('Сервер выключен.')
+    logger.info('Сервер выключен.')
 
 
 app = FastAPI(lifespan=lifespan)

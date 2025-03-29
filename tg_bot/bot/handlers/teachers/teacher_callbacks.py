@@ -146,7 +146,10 @@ async def delete_selected_files(call: CallbackQuery, state: FSMContext):
         else:
             response = await delete_homeworks_in_lesson_request(files_to_delete)
 
-        await call.answer(response.get('detail'), show_alert=True)
+        try:
+            await call.answer(response.get('detail'), show_alert=True)
+        except AttributeError:
+            await call.answer('Файлы успешно удалены', show_alert=True)
         await state.clear()
     else:
         await call.answer("Нет выбранных записей", show_alert=True)
@@ -190,7 +193,11 @@ async def delete_selected_personal_files(call: CallbackQuery, state: FSMContext)
     files_to_delete = [file_id for file_id, selected in selected_files.items() if selected]
     if files_to_delete:
         response = await delete_personal_files_request(files_to_delete)
-        await call.answer(response.get('detail'), show_alert=True)
+        try:
+            await call.answer(response.get('detail'), show_alert=True)
+        except AttributeError:
+            await call.answer('Файлы успешно удалены', show_alert=True)
+        await state.clear()
     else:
         await call.answer("Нет выбранных записей", show_alert=True)
 
@@ -206,7 +213,10 @@ async def delete_all_lesson_files(call: CallbackQuery):
     file_type = call.data.split(':')[2]
 
     response = await delete_all_files_requests(lesson_id, file_type)
-    await call.message.answer(response.get('detail'))
+    try:
+        await call.answer(response.get('detail'), show_alert=True)
+    except AttributeError:
+        await call.answer('Файлы успешно удалены', show_alert=True)
     await show_lesson_for_teacher_details(call.message, lesson_id)
 
 
@@ -217,7 +227,10 @@ async def delete_all_personal_files(call: CallbackQuery):
     user = await get_teacher_request(user_id)
     personal_files_ids = [file.get('id') for file in user.get('data', {}).get('personal_files')]
     response = await delete_personal_files_request(personal_files_ids)
-    await call.message.answer(response.get('detail'))
+    try:
+        await call.answer(response.get('detail'), show_alert=True)
+    except AttributeError:
+        await call.answer('Файлы успешно удалены', show_alert=True)
     await show_personal_files(call.message)
 
 
