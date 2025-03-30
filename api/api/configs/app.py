@@ -2,6 +2,7 @@ from fastapi import FastAPI
 from contextlib import asynccontextmanager
 from pydantic_settings import BaseSettings
 from fastapi.staticfiles import StaticFiles
+from fastapi.middleware.cors import CORSMiddleware
 
 from api.configs.loggers import logger
 
@@ -26,3 +27,11 @@ class Settings(BaseSettings):
 
 
 settings = Settings()
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["http://217.114.10.190"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
