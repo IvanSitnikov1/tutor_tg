@@ -2,7 +2,7 @@ from fastapi import FastAPI
 from contextlib import asynccontextmanager
 from pydantic_settings import BaseSettings
 from fastapi.staticfiles import StaticFiles
-from fastapi.middleware.cors import CORSMiddleware
+from fastapi.openapi.docs import get_swagger_ui_html
 
 from api.configs.loggers import logger
 
@@ -15,6 +15,7 @@ async def lifespan(app: FastAPI):
 
 
 app = FastAPI(lifespan=lifespan)
+# app = FastAPI(lifespan=lifespan, docs_url=None, redoc_url=None)
 
 app.mount("/static", StaticFiles(directory="../static"), name="static")
 
@@ -28,10 +29,11 @@ class Settings(BaseSettings):
 
 settings = Settings()
 
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=["http://217.114.10.190"],
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
+
+@app.get("/docs", include_in_schema=False)
+async def custom_swagger_ui_html():
+    return get_swagger_ui_html(
+        openapi_url="/openapi.json",
+        title="API Docs",
+        swagger_ui_parameters={"supportedSubmitMethods": []}
+    )
