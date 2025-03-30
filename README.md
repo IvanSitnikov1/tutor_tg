@@ -41,6 +41,7 @@
   - `functions/` - Бизнес-логика
   - `handlers/` - Обработчики сообщений (auth, students, teachers)
   - `keyboards/` - Клавиатуры бота
+```
 
 ## Стек
 Python3.11, FastAPI, Aiogram3, PostgreSQL
