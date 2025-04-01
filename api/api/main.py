@@ -1,3 +1,4 @@
+"""Модуль подключает роутеры к основному приложению"""
 from api.configs.app import app
 from api.routers.main_router import main_router
 from api.handlers import lesson_router, teacher_router, student_router

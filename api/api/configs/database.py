@@ -1,3 +1,7 @@
+"""
+Модуль настраивает асинхронное подключение к базе данных Postgresql.
+Создает декоратор connection для обертки функций, работающих с базой данных.
+"""
 from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.ext.asyncio import AsyncAttrs

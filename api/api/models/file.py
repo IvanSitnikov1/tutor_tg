@@ -10,6 +10,16 @@ from api.configs.database import Base
 
 
 class BaseFile(Base):
+    """
+    Абстрактная базовая модель для файловых сущностей.
+
+    Attributes:
+        id (int): Уникальный идентификатор (primary key)
+        lesson_id (int): ID урока (внешний ключ, каскадное удаление)
+        file_path (str): Путь к файлу в хранилище
+        lesson (Lesson): Связанный объект урока
+    """
+
     __abstract__ = True
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
@@ -22,14 +32,38 @@ class BaseFile(Base):
 
 
 class File(BaseFile):
+    """
+    Модель материала урока.
+
+    Attributes:
+        Наследует все атрибуты от BaseFile
+    """
+
     __tablename__ = "files"
 
 
 class Homework(BaseFile):
+    """
+    Модель домашнего задания.
+
+    Attributes:
+        Наследует все атрибуты от BaseFile
+    """
+
     __tablename__ = "homeworks"
 
 
 class PersonalFile(Base):
+    """
+    Модель личных файлов преподавателя.
+
+    Attributes:
+        id (int): Уникальный идентификатор (primary key)
+        author_id (int): ID преподавателя (внешний ключ)
+        file_path (str): Путь к файлу в хранилище
+        author (Teacher): Связанный объект преподавателя
+    """
+
     __tablename__ = "personal_files"
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
@@ -40,8 +74,21 @@ class PersonalFile(Base):
 
 
 class CompletedHomework(BaseFile):
+    """
+    Модель выполненного домашнего задания.
+
+    Attributes:
+        Наследует все атрибуты от BaseFile
+    """
+
     __tablename__ = "completed_homeworks"
 
 
 class CommentToCompletedHomework(BaseFile):
+    """
+    Модель комментария к домашнему заданию.
+
+    Attributes:
+        Наследует все атрибуты от BaseFile
+    """
     __tablename__ = "comments_to_completed_homeworks"

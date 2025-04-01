@@ -26,4 +26,4 @@ async def change_lesson_is_done_util(lesson_id: int, session: AsyncSession):
             raise HTTPException(status_code=500, detail="Ошибка при изменении состояния урока")
     else:
         logger.error('Запрашиваемого урока не существует')
-        raise HTTPException(status_code=400, detail='Запрашиваемого урока не существует')
+        raise HTTPException(status_code=404, detail='Запрашиваемого урока не существует')

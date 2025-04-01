@@ -9,6 +9,18 @@ from api.configs.database import Base
 
 
 class User(Base):
+    """
+    Базовый класс пользователя системы.
+
+    Использует полиморфную загрузку (inheritance) через поле type.
+    Является родительским классом для Teacher и Student.
+
+    Attributes:
+        id (int): Уникальный идентификатор пользователя (tg id)
+        username (str): Уникальное имя пользователя
+        type (str): Тип пользователя (дискриминатор для наследования)
+    """
+
     __tablename__ = "users"
 
     id: Mapped[int] = mapped_column(BigInteger, primary_key=True)
@@ -22,6 +34,18 @@ class User(Base):
 
 
 class Teacher(User):
+    """
+    Модель преподавателя в системе.
+
+    Наследуется от User, добавляет связи с уроками, студентами и файлами.
+
+    Attributes:
+        id (int): Ссылка на id в таблице users (первичный ключ, каскадное удаление)
+        lessons (list[Lesson]): Список уроков, созданных преподавателем
+        students (list[Student]): Список студентов преподавателя
+        personal_files (list[PersonalFile]): Личные файлы преподавателя
+    """
+
     __tablename__ = "teachers"
 
     id: Mapped[int] = mapped_column(ForeignKey("users.id", ondelete='CASCADE'), primary_key=True)
@@ -41,6 +65,18 @@ class Teacher(User):
 
 
 class Student(User):
+    """
+    Модель студента в системе.
+
+    Наследуется от User, содержит ссылку на преподавателя.
+
+    Attributes:
+        id (int): Ссылка на id в таблице users (первичный ключ, каскадное удаление)
+        teacher_id (int): ID преподавателя студента (вторичный ключ, каскадное удаление)
+        teacher (Teacher): Объект преподавателя
+        lessons (list[Lesson]): Список уроков студента
+    """
+
     __tablename__ = "students"
 
     id: Mapped[int] = mapped_column(

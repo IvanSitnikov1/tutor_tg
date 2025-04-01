@@ -1,3 +1,4 @@
+"""Скрипт для запуска api через uvicorn"""
 import uvicorn
 
 

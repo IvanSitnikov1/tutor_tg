@@ -14,6 +14,26 @@ from api.utils.lessons.delete_list_homeworks_util import delete_list_homeworks_u
         Обязательные:
             files_ids(list[int]): список id удаляемых домашних заданий
     ''',
+    responses={
+        204: {
+            "description": "Домашние задания успешно удалены",
+            "content": {"application/json": {"example": {
+                "detail": "Домашние задания успешно удалены",
+            }}},
+        },
+        400: {
+            "description": "Не удалось удалить домашние задания",
+            "content": {"application/json": {"example": {
+                "detail": "Не удалось удалить домашние задания",
+            }}},
+        },
+        404: {
+            "description": "Файлы не найдены",
+            "content": {"application/json": {"example": {
+                "detail": "Файлы не найдены",
+            }}},
+        },
+    },
 )
 async def delete_list_homeworks(homeworks_data: SDeleteFiles):
     return await delete_list_homeworks_util(homeworks_data)

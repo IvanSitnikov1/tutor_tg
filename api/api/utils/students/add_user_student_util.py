@@ -32,4 +32,4 @@ async def add_user_student_util(
         return {"data": user, "detail": "Пользователь успешно добавлен"}
     except SQLAlchemyError as e:
         logger.error(f'Ошибка при добавлении пользователя: {e}')
-        raise HTTPException(status_code=500, detail="Ошибка при добавлении пользователя!")
+        raise HTTPException(status_code=500, detail="Ошибка при добавлении пользователя")

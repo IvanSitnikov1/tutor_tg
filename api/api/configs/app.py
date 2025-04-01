@@ -1,3 +1,8 @@
+"""
+Модуль создает основлое приложение fastapi. Монтирует дирректорию со статическими файлами.
+Создает объект settings, хранящий необходимые константы.
+Создает кастомный сваггер, с запретом на выполнение запросов через него - для безопасности.
+"""
 from fastapi import FastAPI
 from contextlib import asynccontextmanager
 from pydantic_settings import BaseSettings

@@ -17,6 +17,28 @@ from api.schemas.lesson import SLessonAdd
             student_id(int): id студента
             author_id(int): id учителя автора
     ''',
+    responses={
+        201: {
+            "description": "Урок добавлен успешно",
+            "content": {"application/json": {"example": {
+                "data": {
+                    "name": "test_lesson",
+                    "is_done": False,
+                    "author_id": 1111111111,
+                    "id": 1,
+                    "date": "2025-04-01",
+                    "student_id": 2222222222,
+                },
+                "detail": "Урок добавлен успешно",
+            }}},
+        },
+        500: {
+            "description": "Ошибка при добавлении урока",
+            "content": {"application/json": {"example": {
+                "detail": "Ошибка при добавлении урока",
+            }}},
+        },
+    },
 )
 async def add_lesson(lesson: SLessonAdd):
     return await add_lesson_util(lesson)

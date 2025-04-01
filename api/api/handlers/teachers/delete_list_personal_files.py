@@ -14,6 +14,26 @@ from api.utils.teachers.delete_list_personal_files_util import delete_list_perso
         Обязательные:
             files_ids(list[int]): список id удаляемых личных файлов
     ''',
+    responses={
+        204: {
+            "description": "Выбранные персональные файлы успешно удалены",
+            "content": {"application/json": {"example": {
+                "detail": "Выбранные персональные файлы успешно удалены",
+            }}},
+        },
+        400: {
+            "description": "Не удалось удалить выбранные персональные файлы",
+            "content": {"application/json": {"example": {
+                "detail": "Не удалось удалить выбранные персональные файлы",
+            }}},
+        },
+        404: {
+            "description": "Файлы не найдены",
+            "content": {"application/json": {"example": {
+                "detail": "Файлы не найдены",
+            }}},
+        },
+    },
 )
 async def delete_list_personal_files(personal_files_data: SDeleteFiles):
     return await delete_list_personal_files_util(personal_files_data)
