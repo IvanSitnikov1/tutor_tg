@@ -1,12 +1,15 @@
+"""Модуль содержит клавиатуры для учителя"""
+
 import calendar
 from datetime import datetime, timedelta
 
 from aiogram.types import KeyboardButton, ReplyKeyboardMarkup, InlineKeyboardButton, \
     InlineKeyboardMarkup
-from aiogram.utils.keyboard import InlineKeyboardBuilder
 
 
 def teacher_menu_kb():
+    """Клавиатура меню учителя"""
+
     kb_list = [
         [KeyboardButton(text='👤Ученики'), KeyboardButton(text='📩 Пригласить ученика')],
         [KeyboardButton(text='📝Личные файлы')],
@@ -20,6 +23,8 @@ def teacher_menu_kb():
 
 
 def students_kb(students):
+    """Клавиатура со списком учеников и кнопками удаления учеников"""
+
     kb_list = []
     for student in students:
         student_name = student.get('username')
@@ -36,6 +41,8 @@ def students_kb(students):
 
 
 def lessons_of_student_kb(student):
+    """Клавиатура показывает список уроков ученика с кнопками удаления. Последняя кнопка - добавление урока"""
+
     kb_list = []
     for lesson in student.get('lessons'):
         lesson_button = InlineKeyboardButton(
@@ -58,6 +65,8 @@ def lessons_of_student_kb(student):
 
 
 def lesson_files_kb(lesson_id, file_type):
+    """Клавиатура отображает функциональные кнопки дабавления и двух типов удаления материалов урока"""
+
     kb_list = [
         [InlineKeyboardButton(text='Add', callback_data=f'add_lesson_file:{lesson_id}')],
         [InlineKeyboardButton(text='Delete all', callback_data=f'delete_all_lesson_files:{lesson_id}:{file_type}'),
@@ -68,6 +77,8 @@ def lesson_files_kb(lesson_id, file_type):
 
 
 def lesson_homework_kb(lesson_id, file_type):
+    """Клавиатура отображает функциональные кнопки дабавления и двух типов удаления домашних заданий урока"""
+
     kb_list = [
         [InlineKeyboardButton(text='Add', callback_data=f'add_lesson_homework:{lesson_id}')],
         [InlineKeyboardButton(text='Delete all', callback_data=f'delete_all_lesson_files:{lesson_id}:{file_type}'),
@@ -78,6 +89,8 @@ def lesson_homework_kb(lesson_id, file_type):
 
 
 def personal_files_kb(user_id):
+    """Клавиатура отображает функциональные кнопки дабавления и двух типов удаления личных файлов"""
+
     kb_list = [
         [InlineKeyboardButton(text='Add', callback_data=f'add_personal_file:{user_id}')],
         [InlineKeyboardButton(text='Delete all', callback_data=f'delete_all_personal_files:{user_id}'),
@@ -88,6 +101,8 @@ def personal_files_kb(user_id):
 
 
 def toggle_lesson_is_done_kb(lesson):
+    """Клавиатура отображает название открытого урока в зависимости от его состояния и меняет это состояние"""
+
     kb_list = [
         [InlineKeyboardButton(
             text=f"{'✅' if lesson.get('is_done') else lesson.get('name')}",
@@ -99,6 +114,8 @@ def toggle_lesson_is_done_kb(lesson):
 
 
 def delete_files_kb(lesson, selected_files, file_type):
+    """Клавиатура отображает файлы урока для удаления с соответствующем состоянии чекбокса, а так же кнопку удаления"""
+
     kb_list = []
     for file in lesson.get(file_type):
         is_selected = selected_files.get(str(file.get('id')), False)
@@ -118,6 +135,8 @@ def delete_files_kb(lesson, selected_files, file_type):
 
 
 def delete_personal_files_by_ids_kb(user, selected_files):
+    """Клавиатура отображает личные файлы для удаления с соответствующем состоянии чекбокса, а так же кнопку удаления"""
+
     kb_list = []
     for file in user.get('personal_files'):
         is_selected = selected_files.get(str(file.get('id')), False)
@@ -127,31 +146,31 @@ def delete_personal_files_by_ids_kb(user, selected_files):
             callback_data=f"toggle_personal_file:{file.get('id')}",
         )
         kb_list.append([file_button])
-    kb_list.append([InlineKeyboardButton(text="Удалить выбранное", callback_data=f'delete_selected_personal_files')])
+    kb_list.append([InlineKeyboardButton(text="Delete files", callback_data=f'delete_selected_personal_files')])
 
     keyboard = InlineKeyboardMarkup(inline_keyboard=kb_list)
     return keyboard
 
 
 def add_comment_kb(lesson_id):
+    """Клавиатура отображает кнопку для добавления комментария к домашнему заданию урока"""
+
     kb_list = [[InlineKeyboardButton(text='Add comment', callback_data=f'add_lesson_comment:{lesson_id}')]]
     keyboard = InlineKeyboardMarkup(inline_keyboard=kb_list)
     return keyboard
 
 
-def generate_calendar(year: int, month: int) -> InlineKeyboardMarkup:
+def generate_calendar(year, month):
+    """Клавиатура генерирует календарь для выбота даты урока"""
+
     keyboard = []
 
-    # 📌 Получаем название месяца
     month_name = calendar.month_name[month]
-    # Добавляем кнопку с названием месяца в верхнюю часть
     keyboard.append([InlineKeyboardButton(text=f"📅 {month_name} {year}", callback_data="ignore")])
 
-    # 📌 Дни недели
     days = ["Пн", "Вт", "Ср", "Чт", "Пт", "Сб", "Вс"]
     keyboard.append([InlineKeyboardButton(text=day, callback_data="ignore") for day in days])
 
-    # 📌 Генерация дат
     month_calendar = calendar.monthcalendar(year, month)
     for week in month_calendar:
         row = []
@@ -163,7 +182,6 @@ def generate_calendar(year: int, month: int) -> InlineKeyboardMarkup:
                 row.append(InlineKeyboardButton(text=str(day), callback_data=f"select_date_{date_str}"))
         keyboard.append(row)
 
-    # 📌 Кнопки переключения месяца (внизу)
     prev_month = (datetime(year, month, 1) - timedelta(days=1)).month
     prev_year = (datetime(year, month, 1) - timedelta(days=1)).year
 
